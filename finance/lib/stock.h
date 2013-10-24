@@ -1,0 +1,124 @@
+#ifndef STOCK_H
+#define STOCK_H
+
+#include "TObject.h"
+#include "TRandom.h"
+#include "TProfile.h"
+#include "TMath.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <iomanip>
+#include <string>
+
+//#define DEBUG
+class stock{
+
+ public:
+  // constructor
+ stock(double bet=0, 
+       double alpha=0,
+       double betaSigma=0,
+       int range=300,
+       double bins=150):
+  m_bet(bet),
+    m_alpha(alpha),
+    m_betaSigma(betaSigma),
+    m_range(range),
+    m_bins(bins)
+      
+    {
+      m_beta = new TRandom();
+      m_integral+=m_bet;
+      m_totalSpent-=m_bet;
+      m_hp = new TProfile("hp","",m_bins,0,m_range,-1e6,+1e6,"S");
+      m_hp->GetXaxis()->SetTitle("time [s]");
+      m_hp->SetMarkerStyle(8);
+      m_hp->SetMarkerColor(kBlack);
+      m_hp->SetStats(0);
+      
+      char na[100];
+      sprintf(na,"P(t,x|#alpha,#beta) / %.2f",m_hp->GetXaxis()->GetBinWidth(1)," s");
+      m_hp->GetYaxis()->SetTitle(na);
+     
+      m_hpInt=(TProfile*)m_hp->Clone("m_hpIn");
+      m_hcashout=(TProfile*)m_hp->Clone("hcashout");
+
+      htrans=new TH1F("htrans","",2000,-2000,+2000);
+      
+    }
+
+  ~stock(){ 
+    // destructor 
+    delete m_beta;
+    delete m_hp;
+    delete m_hpInt;
+    delete htrans;
+    delete m_hcashout;
+  } 
+
+
+  // Actions
+  double buy(double bet=0);
+  double sell(double bet=0);
+  double eval(double Dtime=0,double bypassBeta=0);
+  void iterTime(double time=0,double step=0);
+  double setBetaSigma(double betaSigma=0.5);
+  
+  double getVar(double start=0,double stop=0);
+  
+  // Get methods
+  TProfile *getHist(bool integ=false){ if(integ) return m_hpInt; else return m_hp; }
+  double getSpent(){return m_totalSpent; }
+  double getFVal(){ return m_f_val; } 
+  TRandom *getBeta(){ return m_beta; }
+  double getAlpha(){return m_alpha; }
+  double getIntegral(){return m_integral; } 
+  double getTime(){return m_time; }
+  int getIterations(){return m_integral; }
+  double getBetaVal(){return m_betaVal;  }
+  double getLastBin(bool integ=false);
+  double getShift(){return m_shift;}
+  double getPotential(){ return m_potential;  }
+  void setZeroOfPotential(double val){ m_potential=val; }
+  TH1F *getTrans(){return htrans;}
+  TProfile *getHpotential(){ return m_hcashout; }
+  
+
+
+
+  
+ private:
+ 
+  double m_potential;// potential energy i.e. amount of money cashed out;
+  double m_shift;
+  double m_range;
+  int m_bins;
+  double m_betaVal;
+  TH1F *htrans;
+  TProfile *m_hcashout;
+  TProfile *m_hp;
+  TProfile *m_hpInt;
+  double m_f_val;
+  double m_alpha;
+  TRandom  *m_beta;
+  double m_betaSigma;
+  double m_bet;
+  double m_integral;
+  int  m_iter;
+  double m_time;
+  double m_int_time;
+  double m_totalSpent;
+
+
+};
+
+typedef std::vector<stock*> stockContainer;
+#endif
