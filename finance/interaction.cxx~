@@ -1,0 +1,3 @@
+/*
+ * Compile with g++ lottery.cxx -o lottery `root-config --cflags --libs`
+ */

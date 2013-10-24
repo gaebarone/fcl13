@@ -1,0 +1,51 @@
+#include "stock.h"
+
+
+double stock::buy(double bet) {
+  m_integral+=bet;
+  return m_integral;
+}
+
+double stock::sell(double bet){
+  m_integral -=bet;
+  m_totalSpent-=m_bet;
+  return m_integral;
+}
+
+double stock::getVar(double start,double stop){
+  return (m_integral + m_totalSpent ) / m_totalSpent ; 
+}
+
+
+double stock::eval(double Dtime){
+  
+  double betaVal=(m_beta->Uniform(-1,+1))*m_betaSigma;
+  m_f_val = 0 ;
+  // linear increase 
+  m_f_val+=m_alpha * m_integral ;
+  
+  //random component
+  m_f_val+=betaVal * m_integral;
+  
+  m_integral+=m_f_val ;
+  m_iter++;
+  m_time=Dtime;
+  m_int_time+=m_time;
+  m_iter++;
+  return m_f_val;
+}
+
+double stock::setBetaSigma(double betaSigma){
+  m_betaSigma = betaSigma;
+}
+
+
+void stock::iterTime(double time,double step){
+  int i=0;
+  double ltime=0;
+  while ( ltime < time) {
+    ltime+=step;
+    this->eval(step);
+  } 
+  
+}

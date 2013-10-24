@@ -1,0 +1,54 @@
+#include "TApplication.h"
+#include "TSystem.h"
+#include "TROOT.h"
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <iomanip>
+#include <string>
+#include "TFile.h"
+#include "TH1.h"
+#include "TH1F.h"
+#include "TCanvas.h"
+#include "TLine.h"
+#include "TF1.h"
+#include "TFile.h"
+#include "TROOT.h"
+#include "TH1F.h"
+#include "TCanvas.h"
+#include "TSystem.h"
+#include "TF1.h"
+
+#include "RooWorkspace.h"
+#include "RooAbsData.h"
+#include "RooStats/NumberCountingUtils.h"
+#include "RooStats/ModelConfig.h"
+#include "RooStats/FeldmanCousins.h"
+#include "RooStats/ToyMCSampler.h"
+#include "RooStats/PointSetInterval.h"
+#include "RooStats/ConfidenceBelt.h"
+#include "RooDataHist.h"
+#include "RooGenericPdf.h"
+#include "RooRealVar.h"
+#include "RooAbsPdf.h"
+#include "RooHistPdf.h"
+#include "RooStats/ProfileLikelihoodCalculator.h"
+#include "RooStats/LikelihoodInterval.h"
+#include "RooStats/LikelihoodIntervalPlot.h"
+#include "RooStats/HypoTestResult.h"
+#include "RooStats/ConfInterval.h"
+#include "RooStats/ProfileLikelihoodTestStat.h"
+#include "RooStats/SamplingDistribution.h"
+#include "RooStats/SamplingDistPlot.h"
+#include "RooStats/RooStatsUtils.h"
+#include "RooStats/HypoTestResult.h"
+#include "RooStats/SamplingDistPlot.h"
+#include "RooStats/ModelConfig.h"
+#include "TMath.h"
+#include <vector>
+#include <stdio>
+#include <time>
+
+using namespace RooFit;
+using namespace RooStats;
+using namespace std;
