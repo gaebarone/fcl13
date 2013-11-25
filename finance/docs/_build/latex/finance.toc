@@ -1,0 +1,12 @@
+\select@language {english}
+\contentsline {chapter}{\numberline {1}change\_stock module}{3}{chapter.1}
+\contentsline {chapter}{\numberline {2}conf module}{5}{chapter.2}
+\contentsline {chapter}{\numberline {3}market module}{7}{chapter.3}
+\contentsline {chapter}{\numberline {4}newfinance module}{9}{chapter.4}
+\contentsline {chapter}{\numberline {5}stock module}{13}{chapter.5}
+\contentsline {chapter}{\numberline {6}test module}{15}{chapter.6}
+\contentsline {chapter}{\numberline {7}testVirtualMarket module}{17}{chapter.7}
+\contentsline {chapter}{\numberline {8}virtualMarket module}{19}{chapter.8}
+\contentsline {chapter}{\numberline {9}Indices and tables}{21}{chapter.9}
+\contentsline {chapter}{Python Module Index}{23}{section*.31}
+\contentsline {chapter}{Index}{25}{section*.32}
