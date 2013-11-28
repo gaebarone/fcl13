@@ -1,4 +1,3 @@
-"""codeauthor:: gaetano gaetano.barone@cern.ch""
 import numpy as np
 import stock
 from stock import stock 
