@@ -4,13 +4,13 @@ print __doc__
 # License: BSD
 
 import datetime
-import ROOT
+#import ROOT
 import numpy as np
 import pylab as pl
 import newfinance as finance
 #from matplotlib import finance
 from matplotlib.collections import LineCollection
-
+import matplotlib.pyplot as plt
 from sklearn import cluster, covariance, manifold
 
 ###############################################################################
@@ -42,10 +42,17 @@ date = np.array([q.date for q in quotes])
 variation = close - open
 
 histograms = []
-for loop in range(0, len(quotes)):
-    hist = ROOT.TH1F(symbols[loop], symbols[loop], len(open[loop]-1), 0, len(open[loop]))
-    for fill in range(0, len(open[loop])):
-        hist.SetBinContent(fill+1, open[loop][fill])
-        if fill % 20 == 0 and fill != 0:
-            hist.GetXaxis().SetBinLabel(fill, str(date[loop][fill]))
-    histograms.append(hist)
+# for loop in range(0, len(quotes)):
+#     hist = ROOT.TH1F(symbols[loop], symbols[loop], len(open[loop]-1), 0, len(open[loop]))
+#     for fill in range(0, len(open[loop])):
+#         hist.SetBinContent(fill+1, open[loop][fill])
+#         if fill % 20 == 0 and fill != 0:
+#             hist.GetXaxis().SetBinLabel(fill, str(date[loop][fill]))
+#     histograms.append(hist)
+
+for quote in range(0, len(quotes)):
+    pl.figure()
+    a =plt.plot(date[quote], close[quote], linestyle='-')
+    histograms.append(a)
+    
+#pl.show()
