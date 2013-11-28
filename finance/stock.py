@@ -4,32 +4,54 @@ import market
 class stock():
     """class for decribing stock evolution"""
     m_cap = 0
-    m_time = 0 
+    m_time =0 
+    m_val =[]
+    m_time_his =[]
+    m_iters = 0 
+
     def __init__(self,cap):
-        stock.m_cap=cap
-        stock.m_time=0
-        print "new stock with start value of ", stock.m_cap 
+        self.m_cap=cap
+        self.m_time=0
+        self.m_val.append(cap)
+        self.m_time_his.append(0)
+        print "new stock with start value of ", self.m_cap 
 
     def bet(betVal):
-        stock.m_cap = stock.m_cap+betVal
+        self.m_cap = self.m_cap+betVal
     
     def getCap(self):
-        return stock.m_cap
+        return self.m_cap
     
     def getTime(self):
-        return stock.m_time
+        return self.m_time
     
     def next(self):
         val=self.evolve()
         return val 
 
+    def getAll(self):
+        return self.m_val
+    
+    def getTimes(self):
+        return self.m_time_his 
+
+    def addHistoricaldata(self,currentVal=0,time=0):
+        self.m_val.append(float(currentVal))
+        self.m_cap=float(currentVal)
+        self.m_iters+=1
+        self.m_time=time
+        return self.getCap()
+
     def evolve(self,change=0,use=False):
         if use:
-            stock.m_cap = stock.m_cap*change + stock.m_cap
+            self.m_cap = self.m_cap*change + self.m_cap
         else:
-            stock.m_cap += np.random.normal(0,.1,1)*stock.m_cap  
-        
-        stock.m_time+=1
-        return stock.m_cap
+            self.m_cap += np.random.normal(0,.1,1)*self.m_cap  
+        self.m_iters+=1
+        self.m_time+=1
+        self.m_val.append(float(self.m_cap))
+        self.m_time_his.append(self.m_time)
+        #print "time ",self.m_time," value ",self.m_cap
+        return self.m_cap
 
 
