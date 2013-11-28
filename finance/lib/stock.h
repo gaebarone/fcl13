@@ -5,6 +5,10 @@
 #include "TRandom.h"
 #include "TProfile.h"
 #include "TMath.h"
+#include "TMinuit.h"
+#include "TF1.h"
+#include "TFitResult.h"
+#include "TFitResultPtr.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -39,6 +43,7 @@ class stock{
       m_integral+=m_bet;
       m_totalSpent-=m_bet;
       m_hp = new TProfile("hp","",m_bins,0,m_range,-1e6,+1e6,"S");
+      m_hp->Sumw2(true);
       m_hp->GetXaxis()->SetTitle("time [s]");
       m_hp->SetMarkerStyle(8);
       m_hp->SetMarkerColor(kBlack);
@@ -53,6 +58,8 @@ class stock{
 
       htrans=new TH1F("htrans","",2000,-2000,+2000);
       
+      m_tf1func=NULL;
+      
     }
 
   ~stock(){ 
@@ -62,13 +69,20 @@ class stock{
     delete m_hpInt;
     delete htrans;
     delete m_hcashout;
+    if(!m_tf1func) delete m_tf1func;
   } 
-
+  // Fit
+  //Double function(Double_t *x, Double_t *p);
+  double getBestBet(){return m_tf1func->GetParameter(3); }
+  double getBestBetErr(){return m_tf1func->GetParError(3); } 
+  TF1 *getTF1(){ return m_tf1func; } 
+  double getFitResult(){ return fresult; }
+  double fit(double Dt=0, double bet=0, double betRange=0, double beta=0);
 
   // Actions
   double buy(double bet=0);
   double sell(double bet=0);
-  double eval(double Dtime=0,double bypassBeta=0);
+  double eval(double Dtime=0,double bypassBeta=0,bool store=true,double cap=0);
   void iterTime(double time=0,double step=0);
   double setBetaSigma(double betaSigma=0.5);
   
@@ -90,9 +104,6 @@ class stock{
   void setZeroOfPotential(double val){ m_potential=val; }
   TH1F *getTrans(){return htrans;}
   TProfile *getHpotential(){ return m_hcashout; }
-  
-
-
 
   
  private:
@@ -116,7 +127,10 @@ class stock{
   double m_time;
   double m_int_time;
   double m_totalSpent;
-
+  
+  // Minimization
+  TF1 *m_tf1func; 
+  TFitResultPtr fresult;
 
 };
 

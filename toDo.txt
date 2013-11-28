@@ -2,6 +2,10 @@
 # In this file we will setup what's needed to be done
 ######################################################
 
+Short Names: 
+      #GB: Gaetano 
+      #AK: Akshay 
+      #JB: Javier
 
 
 

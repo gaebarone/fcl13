@@ -95,23 +95,27 @@ int main(int argc, char *argv[]){
   // define a second correlated stock
   stock *corrStock=new stock(100,-alpha,betaVal);
   
-  
+  double dt=0;
   while ( t < time) {
     
     double alphaR = 0;//r->Uniform(0,alpha);
     double randomDay =0;
     double  bet=0;
 
-    //Betting Stragies 
-    // Bet every 10 days 
-    // if ( i % 10  == 0 )
-    // {      myStock->buy(100);   }     
     
     corrStock->eval(step);
     
-    double buyVal=  SimpleMiniMizer(myStock,corrStock->getBetaVal(), 
-				    -.99*myStock->getIntegral(),0.1*myStock->getPotential());
+    //double buyVal=  SimpleMiniMizer(myStock,corrStock->getBetaVal(), 
+    //sw/				    -.99*myStock->getIntegral(),0.1*myStock->getPotential());
     
+    double buyVal=0;
+    
+    if( dt = 100){ 
+      buyVal= myStock->fit(dt,100,2,corrStock->getBetaVal());
+      dt=0;
+    }
+    
+    dt+=step;
     myStock->buy(buyVal);   
 
     double f= myStock->eval(step,corrStock->getBetaVal());
@@ -213,7 +217,7 @@ TCanvas *c2=new TCanvas("c2","");{
    corrStock->getHist(true)->SetMarkerColor(kRed);
    corrStock->getHist(true)->Scale(1/fabs(corrStock->getHist(true)->Integral()));
    corrStock->getHist(true)->Draw("SAME PE");
-
+   myStock->getTF1()->Draw("SAME L");
    TLegend *leg2=(TLegend*)DefLeg()->Clone("leg2");
    leg2->AddEntry(myStock->getHist(true),"#int_{0}^{t}f(t,x|#alpha,#beta)","P");
    leg2->AddEntry(corrStock->getHist(true),"input stock","P");

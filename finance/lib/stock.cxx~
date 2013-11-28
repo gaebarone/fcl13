@@ -1,14 +1,69 @@
 #include "stock.h"
 
+/*
+ * Function to minimize
+ */
+double baseEval (double Dtime,double alpha, double bypassBeta,bool store,double &cap){
+  
+  double  f_val = 0 ;
+  // linear increase 
+  f_val+= alpha * cap;
+  //random component
+  f_val+= bypassBeta * thisIntegral;
+  cap+=f_val;
+  return m_f_val;
+}
+
+Double_t stock::function(Double_t *x, Double_t *p){
+  double time=x[0];
+  double step=p[0];
+  double initCap=p[1];
+  double beta=p[2];
+  double bet=p[3];
+  double capital=0; 
+
+  for( double t=0; t < time ; t+=step)
+    capital+=stock::eval(t,beta,false,initCap)+bet*stock::eval(t+step,beta,false,initCap);
+  
+  return capital;   
+}
+
+double stock::fit(double Dt, double bet, double betRange, double beta){
+  if(m_tf1func!=NULL) delete  m_tf1func;
+  m_tf1func =new TF1("tf1func",stock::function,0.,2000.,4);
+  m_tf1func->SetParName(0,"#Delta t");
+  m_tf1func->SetParName(1,"C");
+  m_tf1func->SetParName(2,"#beta");
+  m_tf1func->SetParName(3,"bet");
+  
+  // Initialize
+  m_tf1func->FixParameter(0,Dt);
+  m_tf1func->FixParameter(1,m_integral);
+  m_tf1func->FixParameter(2,beta);
+  m_tf1func->SetParameter(3,bet);
+  
+  m_tf1func->SetParLimits(2,bet-bet*betRange,bet+bet*betRange);
+  
+  fresult=m_hpInt->Fit(m_tf1func,"LWE","",0,m_time); 
+
+  return m_tf1func->GetParameter(3);
+}
+
+
 
 double stock::buy(double bet) {
   m_integral+=bet;
+  m_totalSpent-= m_bet;
+  m_potential +=bet;
+  htrans->Fill(bet);
   return m_integral;
 }
 
 double stock::sell(double bet){
   m_integral -=bet;
-  m_totalSpent-=m_bet;
+  m_totalSpent+=m_bet;
+  m_potential +=fabs(bet); 
+  htrans->Fill(-bet);
   return m_integral;
 }
 
@@ -16,22 +71,47 @@ double stock::getVar(double start,double stop){
   return (m_integral + m_totalSpent ) / m_totalSpent ; 
 }
 
+double stock::getLastBin(bool integ){
+  TProfile *h=integ ? m_hpInt:m_hp; 
+  for ( int i=1;i<(int)h->GetNbinsX() ;i++) 
+    if( h->GetBinContent(i+1)==0 ) return h->GetBinContent(i);
+  return h->GetBinContent(h->GetNbinsX());
+}
 
-double stock::eval(double Dtime){
+double stock::eval(double Dtime,double bypassBeta,bool store,double cap){
+  if(store) 
+    m_shift=m_integral;
   
-  double betaVal=(m_beta->Uniform(-1,+1))*m_betaSigma;
+  m_betaVal=(m_beta->Uniform(-1,+1))*m_betaSigma;
+  if(bypassBeta!=0) m_betaVal=bypassBeta;
+
+  double thisIntegral = cap!=0 ? m_integral:cap;
+  
   m_f_val = 0 ;
   // linear increase 
-  m_f_val+=m_alpha * m_integral ;
+  m_f_val+=m_alpha * thisIntegral;
   
   //random component
-  m_f_val+=betaVal * m_integral;
+  m_f_val+=m_betaVal * thisIntegral;
   
-  m_integral+=m_f_val ;
-  m_iter++;
-  m_time=Dtime;
-  m_int_time+=m_time;
-  m_iter++;
+  thisIntegral+=m_f_val ;
+  
+  if(store) {
+    m_integral=thisIntegral;
+    m_iter++;
+    m_time+=Dtime;
+    m_int_time+=m_time;
+    m_iter++;
+    m_shift-=m_integral;
+    m_hp->Fill(m_time,m_shift/m_integral);
+    m_hpInt->Fill(m_time,m_integral);
+    m_hcashout->Fill(m_time,m_potential);
+  }
+
+
+#ifdef DEBUG
+  std::cout<<"Evaluating Evolution "<< m_f_val<<" "<<m_integral<<" "<<m_time<<std::endl;
+#endif
   return m_f_val;
 }
 
