@@ -1,0 +1,303 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>newfinance module &mdash; finance  documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="finance  documentation" href="index.html" />
+    <link rel="next" title="stock module" href="stock.html" />
+    <link rel="prev" title="market module" href="market.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="stock.html" title="stock module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="market.html" title="market module"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">finance  documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-newfinance">
+<span id="newfinance-module"></span><h1>newfinance module<a class="headerlink" href="#module-newfinance" title="Permalink to this headline">¶</a></h1>
+<p>A collection of modules for collecting, analyzing and plotting
+financial data.   User contributions welcome!</p>
+<dl class="function">
+<dt id="newfinance.candlestick">
+<tt class="descclassname">newfinance.</tt><tt class="descname">candlestick</tt><big>(</big><em>ax</em>, <em>quotes</em>, <em>width=0.2</em>, <em>colorup='k'</em>, <em>colordown='r'</em>, <em>alpha=1.0</em><big>)</big><a class="reference internal" href="_modules/newfinance.html#candlestick"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#newfinance.candlestick" title="Permalink to this definition">¶</a></dt>
+<dd><p>quotes is a sequence of (time, open, close, high, low, ...) sequences.
+As long as the first 5 elements are these values,
+the record can be as long as you want (eg it may store volume).</p>
+<p>time must be in float days format - see date2num</p>
+<p>Plot the time, open, close, high, low as a vertical line ranging
+from low to high.  Use a rectangular bar to represent the
+open-close span.  If close &gt;= open, use colorup to color the bar,
+otherwise use colordown</p>
+<p>ax          : an Axes instance to plot to
+width       : fraction of a day for the rectangle width
+colorup     : the color of the rectangle where close &gt;= open
+colordown   : the color of the rectangle where close &lt;  open
+alpha       : the rectangle alpha level</p>
+<p>return value is lines, patches where lines is a list of lines
+added and patches is a list of the rectangle patches added</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="newfinance.candlestick2">
+<tt class="descclassname">newfinance.</tt><tt class="descname">candlestick2</tt><big>(</big><em>ax</em>, <em>opens</em>, <em>closes</em>, <em>highs</em>, <em>lows</em>, <em>width=4</em>, <em>colorup='k'</em>, <em>colordown='r'</em>, <em>alpha=0.75</em><big>)</big><a class="reference internal" href="_modules/newfinance.html#candlestick2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#newfinance.candlestick2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represent the open, close as a bar line and high low range as a
+vertical line.</p>
+<p>ax          : an Axes instance to plot to
+width       : the bar width in points
+colorup     : the color of the lines where close &gt;= open
+colordown   : the color of the lines where close &lt;  open
+alpha       : bar transparency</p>
+<p>return value is lineCollection, barCollection</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="newfinance.fetch_historical_yahoo">
+<tt class="descclassname">newfinance.</tt><tt class="descname">fetch_historical_yahoo</tt><big>(</big><em>ticker</em>, <em>date1</em>, <em>date2</em>, <em>cachename=None</em>, <em>dividends=False</em><big>)</big><a class="reference internal" href="_modules/newfinance.html#fetch_historical_yahoo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#newfinance.fetch_historical_yahoo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch historical data for ticker between date1 and date2.  date1 and
+date2 are date or datetime instances, or (year, month, day) sequences.</p>
+<p>Ex:
+fh = fetch_historical_yahoo(&#8216;^GSPC&#8217;, (2000, 1, 1), (2001, 12, 31))</p>
+<p>cachename is the name of the local file cache.  If None, will
+default to the md5 hash or the url (which incorporates the ticker
+and date range)</p>
+<p>set dividends=True to return dividends instead of price data.  With
+this option set, parse functions will not work</p>
+<p>a file handle is returned</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="newfinance.index_bar">
+<tt class="descclassname">newfinance.</tt><tt class="descname">index_bar</tt><big>(</big><em>ax</em>, <em>vals</em>, <em>facecolor='b'</em>, <em>edgecolor='l'</em>, <em>width=4</em>, <em>alpha=1.0</em><big>)</big><a class="reference internal" href="_modules/newfinance.html#index_bar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#newfinance.index_bar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a bar collection graph with height vals (-1 is missing).</p>
+<p>ax          : an Axes instance to plot to
+width       : the bar width in points
+alpha       : bar transparency</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="newfinance.parse_yahoo_historical">
+<tt class="descclassname">newfinance.</tt><tt class="descname">parse_yahoo_historical</tt><big>(</big><em>fh</em>, <em>adjusted=True</em>, <em>asobject=False</em><big>)</big><a class="reference internal" href="_modules/newfinance.html#parse_yahoo_historical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#newfinance.parse_yahoo_historical" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the historical data in file handle fh from yahoo finance.</p>
+<dl class="docutils">
+<dt><em>adjusted</em></dt>
+<dd><p class="first">If True (default) replace open, close, high, and low prices with
+their adjusted values. The adjustment is by a scale factor, S =
+adjusted_close/close. Adjusted prices are actual prices
+multiplied by S.</p>
+<p class="last">Volume is not adjusted as it is already backward split adjusted
+by Yahoo. If you want to compute dollars traded, multiply volume
+by the adjusted close, regardless of whether you choose adjusted
+= True|False.</p>
+</dd>
+<dt><em>asobject</em></dt>
+<dd><p class="first">If False (default for compatibility with earlier versions)
+return a list of tuples containing</p>
+<blockquote>
+<div>d, open, close, high, low, volume</div></blockquote>
+<p>If None (preferred alternative to False), return
+a 2-D ndarray corresponding to the list of tuples.</p>
+<p>Otherwise return a numpy recarray with</p>
+<blockquote>
+<div>date, year, month, day, d, open, close, high, low,
+volume, adjusted_close</div></blockquote>
+<p>where d is a floating poing representation of date,
+as returned by date2num, and date is a python standard
+library datetime.date instance.</p>
+<p class="last">The name of this kwarg is a historical artifact.  Formerly,
+True returned a cbook Bunch
+holding 1-D ndarrays.  The behavior of a numpy recarray is
+very similar to the Bunch.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="newfinance.plot_day_summary">
+<tt class="descclassname">newfinance.</tt><tt class="descname">plot_day_summary</tt><big>(</big><em>ax</em>, <em>quotes</em>, <em>ticksize=3</em>, <em>colorup='k'</em>, <em>colordown='r'</em><big>)</big><a class="reference internal" href="_modules/newfinance.html#plot_day_summary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#newfinance.plot_day_summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>quotes is a sequence of (time, open, close, high, low, ...) sequences</p>
+<p>Represent the time, open, close, high, low as a vertical line
+ranging from low to high.  The left tick is the open and the right
+tick is the close.</p>
+<p>time must be in float date format - see date2num</p>
+<p>ax          : an Axes instance to plot to
+ticksize    : open/close tick marker in points
+colorup     : the color of the lines where close &gt;= open
+colordown   : the color of the lines where close &lt;  open
+return value is a list of lines added</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="newfinance.plot_day_summary2">
+<tt class="descclassname">newfinance.</tt><tt class="descname">plot_day_summary2</tt><big>(</big><em>ax</em>, <em>opens</em>, <em>closes</em>, <em>highs</em>, <em>lows</em>, <em>ticksize=4</em>, <em>colorup='k'</em>, <em>colordown='r'</em><big>)</big><a class="reference internal" href="_modules/newfinance.html#plot_day_summary2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#newfinance.plot_day_summary2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represent the time, open, close, high, low as a vertical line
+ranging from low to high.  The left tick is the open and the right
+tick is the close.</p>
+<p>ax          : an Axes instance to plot to
+ticksize    : size of open and close ticks in points
+colorup     : the color of the lines where close &gt;= open
+colordown   : the color of the lines where close &lt;  open</p>
+<p>return value is a list of lines added</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="newfinance.quotes_historical_yahoo">
+<tt class="descclassname">newfinance.</tt><tt class="descname">quotes_historical_yahoo</tt><big>(</big><em>ticker</em>, <em>date1</em>, <em>date2</em>, <em>asobject=False</em>, <em>adjusted=True</em>, <em>cachename=None</em><big>)</big><a class="reference internal" href="_modules/newfinance.html#quotes_historical_yahoo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#newfinance.quotes_historical_yahoo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get historical data for ticker between date1 and date2.  date1 and
+date2 are datetime instances or (year, month, day) sequences.</p>
+<p>See <a class="reference internal" href="#newfinance.parse_yahoo_historical" title="newfinance.parse_yahoo_historical"><tt class="xref py py-func docutils literal"><span class="pre">parse_yahoo_historical()</span></tt></a> for explanation of output formats
+and the <em>asobject</em> and <em>adjusted</em> kwargs.</p>
+<p>Ex:
+sp = f.quotes_historical_yahoo(&#8216;^GSPC&#8217;, d1, d2,</p>
+<blockquote>
+<div>asobject=True, adjusted=True)</div></blockquote>
+<p>returns = (sp.open[1:] - sp.open[:-1])/sp.open[1:]
+[n,bins,patches] = hist(returns, 100)
+mu = mean(returns)
+sigma = std(returns)
+x = normpdf(bins, mu, sigma)
+plot(bins, x, color=&#8217;red&#8217;, lw=2)</p>
+<p>cachename is the name of the local file cache.  If None, will
+default to the md5 hash or the url (which incorporates the ticker
+and date range)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="newfinance.volume_overlay">
+<tt class="descclassname">newfinance.</tt><tt class="descname">volume_overlay</tt><big>(</big><em>ax</em>, <em>opens</em>, <em>closes</em>, <em>volumes</em>, <em>colorup='k'</em>, <em>colordown='r'</em>, <em>width=4</em>, <em>alpha=1.0</em><big>)</big><a class="reference internal" href="_modules/newfinance.html#volume_overlay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#newfinance.volume_overlay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a volume overlay to the current axes.  The opens and closes
+are used to determine the color of the bar.  -1 is missing.  If a
+value is missing on one it must be missing on all</p>
+<p>ax          : an Axes instance to plot to
+width       : the bar width in points
+colorup     : the color of the lines where close &gt;= open
+colordown   : the color of the lines where close &lt;  open
+alpha       : bar transparency</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="newfinance.volume_overlay2">
+<tt class="descclassname">newfinance.</tt><tt class="descname">volume_overlay2</tt><big>(</big><em>ax</em>, <em>closes</em>, <em>volumes</em>, <em>colorup='k'</em>, <em>colordown='r'</em>, <em>width=4</em>, <em>alpha=1.0</em><big>)</big><a class="reference internal" href="_modules/newfinance.html#volume_overlay2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#newfinance.volume_overlay2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a volume overlay to the current axes.  The closes are used to
+determine the color of the bar.  -1 is missing.  If a value is
+missing on one it must be missing on all</p>
+<p>ax          : an Axes instance to plot to
+width       : the bar width in points
+colorup     : the color of the lines where close &gt;= open
+colordown   : the color of the lines where close &lt;  open
+alpha       : bar transparency</p>
+<p>nb: first point is not displayed - it is used only for choosing the
+right color</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="newfinance.volume_overlay3">
+<tt class="descclassname">newfinance.</tt><tt class="descname">volume_overlay3</tt><big>(</big><em>ax</em>, <em>quotes</em>, <em>colorup='k'</em>, <em>colordown='r'</em>, <em>width=4</em>, <em>alpha=1.0</em><big>)</big><a class="reference internal" href="_modules/newfinance.html#volume_overlay3"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#newfinance.volume_overlay3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a volume overlay to the current axes.  quotes is a list of (d,
+open, close, high, low, volume) and close-open is used to
+determine the color of the bar</p>
+<p>kwarg
+width       : the bar width in points
+colorup     : the color of the lines where close1 &gt;= close0
+colordown   : the color of the lines where close1 &lt;  close0
+alpha       : bar transparency</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="market.html"
+                        title="previous chapter">market module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="stock.html"
+                        title="next chapter">stock module</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/newfinance.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="stock.html" title="stock module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="market.html" title="market module"
+             >previous</a> |</li>
+        <li><a href="index.html">finance  documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, G. Barone, J. Bilbao de Mendizabal, A. Katre.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b3.
+    </div>
+  </body>
+</html>

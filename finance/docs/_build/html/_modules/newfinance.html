@@ -1,0 +1,814 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>newfinance &mdash; finance  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="finance  documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">finance  documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for newfinance</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A collection of modules for collecting, analyzing and plotting</span>
+<span class="sd">financial data.   User contributions welcome!</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c">#from __future__ import division</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">urllib2</span> <span class="kn">import</span> <span class="n">urlopen</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">hashlib</span> <span class="kn">import</span> <span class="n">md5</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">md5</span> <span class="kn">import</span> <span class="n">md5</span> <span class="c">#Deprecated in 2.5</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">get_configdir</span>
+<span class="kn">from</span> <span class="nn">matplotlib.dates</span> <span class="kn">import</span> <span class="n">date2num</span>
+<span class="kn">from</span> <span class="nn">matplotlib.cbook</span> <span class="kn">import</span> <span class="n">iterable</span>
+<span class="kn">from</span> <span class="nn">matplotlib.collections</span> <span class="kn">import</span> <span class="n">LineCollection</span><span class="p">,</span> <span class="n">PolyCollection</span>
+<span class="kn">from</span> <span class="nn">matplotlib.colors</span> <span class="kn">import</span> <span class="n">colorConverter</span>
+<span class="kn">from</span> <span class="nn">matplotlib.lines</span> <span class="kn">import</span> <span class="n">Line2D</span><span class="p">,</span> <span class="n">TICKLEFT</span><span class="p">,</span> <span class="n">TICKRIGHT</span>
+<span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Rectangle</span>
+<span class="kn">from</span> <span class="nn">matplotlib.transforms</span> <span class="kn">import</span> <span class="n">Affine2D</span>
+
+
+<span class="n">configdir</span> <span class="o">=</span> <span class="n">get_configdir</span><span class="p">()</span>
+<span class="n">cachedir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">configdir</span><span class="p">,</span> <span class="s">&#39;finance.cache&#39;</span><span class="p">)</span>
+
+
+<span class="n">stock_dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s">&#39;date&#39;</span><span class="p">,</span> <span class="nb">object</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s">&#39;year&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s">&#39;month&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s">&#39;day&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s">&#39;d&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">),</span>     <span class="c"># mpl datenum</span>
+                     <span class="p">(</span><span class="s">&#39;open&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s">&#39;close&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s">&#39;high&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s">&#39;low&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s">&#39;volume&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s">&#39;aclose&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)])</span>
+
+
+<div class="viewcode-block" id="parse_yahoo_historical"><a class="viewcode-back" href="../newfinance.html#newfinance.parse_yahoo_historical">[docs]</a><span class="k">def</span> <span class="nf">parse_yahoo_historical</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="n">adjusted</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">asobject</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse the historical data in file handle fh from yahoo finance.</span>
+
+<span class="sd">    *adjusted*</span>
+<span class="sd">      If True (default) replace open, close, high, and low prices with</span>
+<span class="sd">      their adjusted values. The adjustment is by a scale factor, S =</span>
+<span class="sd">      adjusted_close/close. Adjusted prices are actual prices</span>
+<span class="sd">      multiplied by S.</span>
+
+<span class="sd">      Volume is not adjusted as it is already backward split adjusted</span>
+<span class="sd">      by Yahoo. If you want to compute dollars traded, multiply volume</span>
+<span class="sd">      by the adjusted close, regardless of whether you choose adjusted</span>
+<span class="sd">      = True|False.</span>
+
+
+<span class="sd">    *asobject*</span>
+<span class="sd">      If False (default for compatibility with earlier versions)</span>
+<span class="sd">      return a list of tuples containing</span>
+
+<span class="sd">        d, open, close, high, low, volume</span>
+
+<span class="sd">      If None (preferred alternative to False), return</span>
+<span class="sd">      a 2-D ndarray corresponding to the list of tuples.</span>
+
+<span class="sd">      Otherwise return a numpy recarray with</span>
+
+<span class="sd">        date, year, month, day, d, open, close, high, low,</span>
+<span class="sd">        volume, adjusted_close</span>
+
+<span class="sd">      where d is a floating poing representation of date,</span>
+<span class="sd">      as returned by date2num, and date is a python standard</span>
+<span class="sd">      library datetime.date instance.</span>
+
+<span class="sd">      The name of this kwarg is a historical artifact.  Formerly,</span>
+<span class="sd">      True returned a cbook Bunch</span>
+<span class="sd">      holding 1-D ndarrays.  The behavior of a numpy recarray is</span>
+<span class="sd">      very similar to the Bunch.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">datefmt</span> <span class="o">=</span> <span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s">&#39;</span>
+
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span><span class="o">!=</span><span class="mi">7</span><span class="p">:</span>
+            <span class="k">continue</span>      <span class="c"># add warning?</span>
+        <span class="n">datestr</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c">#dt = datetime.date(*time.strptime(datestr, datefmt)[:3])</span>
+        <span class="c"># Using strptime doubles the runtime. With the present</span>
+        <span class="c"># format, we don&#39;t need it.</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">datestr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;-&#39;</span><span class="p">)])</span>
+        <span class="n">dnum</span> <span class="o">=</span> <span class="n">date2num</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+        <span class="nb">open</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">close</span> <span class="o">=</span>  <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="p">]]</span>
+        <span class="n">volume</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+        <span class="n">aclose</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span>
+
+        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">dt</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">day</span><span class="p">,</span>
+                        <span class="n">dnum</span><span class="p">,</span> <span class="nb">open</span><span class="p">,</span> <span class="n">close</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">volume</span><span class="p">,</span> <span class="n">aclose</span><span class="p">))</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">stock_dt</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">adjusted</span><span class="p">:</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s">&#39;aclose&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">d</span><span class="p">[</span><span class="s">&#39;close&#39;</span><span class="p">]</span>
+        <span class="n">scale</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">scale</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="n">d</span><span class="p">[</span><span class="s">&#39;open&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="n">scale</span>
+        <span class="n">d</span><span class="p">[</span><span class="s">&#39;close&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="n">scale</span>
+        <span class="n">d</span><span class="p">[</span><span class="s">&#39;high&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="n">scale</span>
+        <span class="n">d</span><span class="p">[</span><span class="s">&#39;low&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="n">scale</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">asobject</span><span class="p">:</span>
+        <span class="c"># 2-D sequence; formerly list of tuples, now ndarray</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">),</span> <span class="mi">6</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="n">ret</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s">&#39;d&#39;</span><span class="p">]</span>
+        <span class="n">ret</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s">&#39;open&#39;</span><span class="p">]</span>
+        <span class="n">ret</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s">&#39;close&#39;</span><span class="p">]</span>
+        <span class="n">ret</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s">&#39;high&#39;</span><span class="p">]</span>
+        <span class="n">ret</span><span class="p">[:,</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s">&#39;low&#39;</span><span class="p">]</span>
+        <span class="n">ret</span><span class="p">[:,</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s">&#39;volume&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">asobject</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ret</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">d</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">recarray</span><span class="p">)</span>  <span class="c"># Close enough to former Bunch return</span>
+
+</div>
+<div class="viewcode-block" id="fetch_historical_yahoo"><a class="viewcode-back" href="../newfinance.html#newfinance.fetch_historical_yahoo">[docs]</a><span class="k">def</span> <span class="nf">fetch_historical_yahoo</span><span class="p">(</span><span class="n">ticker</span><span class="p">,</span> <span class="n">date1</span><span class="p">,</span> <span class="n">date2</span><span class="p">,</span> <span class="n">cachename</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">dividends</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fetch historical data for ticker between date1 and date2.  date1 and</span>
+<span class="sd">    date2 are date or datetime instances, or (year, month, day) sequences.</span>
+
+<span class="sd">    Ex:</span>
+<span class="sd">    fh = fetch_historical_yahoo(&#39;^GSPC&#39;, (2000, 1, 1), (2001, 12, 31))</span>
+
+<span class="sd">    cachename is the name of the local file cache.  If None, will</span>
+<span class="sd">    default to the md5 hash or the url (which incorporates the ticker</span>
+<span class="sd">    and date range)</span>
+<span class="sd">    </span>
+<span class="sd">    set dividends=True to return dividends instead of price data.  With</span>
+<span class="sd">    this option set, parse functions will not work</span>
+
+<span class="sd">    a file handle is returned</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ticker</span> <span class="o">=</span> <span class="n">ticker</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+
+
+    <span class="k">if</span> <span class="n">iterable</span><span class="p">(</span><span class="n">date1</span><span class="p">):</span>
+        <span class="n">d1</span> <span class="o">=</span> <span class="p">(</span><span class="n">date1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">date1</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">date1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">d1</span> <span class="o">=</span> <span class="p">(</span><span class="n">date1</span><span class="o">.</span><span class="n">month</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">date1</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">date1</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">iterable</span><span class="p">(</span><span class="n">date2</span><span class="p">):</span>
+        <span class="n">d2</span> <span class="o">=</span> <span class="p">(</span><span class="n">date2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">date2</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">date2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">d2</span> <span class="o">=</span> <span class="p">(</span><span class="n">date2</span><span class="o">.</span><span class="n">month</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">date2</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">date2</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
+
+
+    <span class="k">if</span> <span class="n">dividends</span><span class="p">:</span>
+        <span class="n">g</span><span class="o">=</span><span class="s">&#39;v&#39;</span>
+        <span class="n">verbose</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="s">&#39;Retrieving dividends instead of prices&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">g</span><span class="o">=</span><span class="s">&#39;d&#39;</span>
+
+    <span class="n">urlFmt</span> <span class="o">=</span> <span class="s">&#39;http://table.finance.yahoo.com/table.csv?a=</span><span class="si">%d</span><span class="s">&amp;b=</span><span class="si">%d</span><span class="s">&amp;c=</span><span class="si">%d</span><span class="s">&amp;d=</span><span class="si">%d</span><span class="s">&amp;e=</span><span class="si">%d</span><span class="s">&amp;f=</span><span class="si">%d</span><span class="s">&amp;s=</span><span class="si">%s</span><span class="s">&amp;y=0&amp;g=</span><span class="si">%s</span><span class="s">&amp;ignore=.csv&#39;</span>
+<span class="c">#    print urlFmt</span>
+
+    <span class="n">url</span> <span class="o">=</span>  <span class="n">urlFmt</span> <span class="o">%</span> <span class="p">(</span><span class="n">d1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">d1</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">d1</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                     <span class="n">d2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">d2</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">d2</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">ticker</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+    <span class="k">print</span> <span class="n">url</span>
+
+    <span class="k">if</span> <span class="n">cachename</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">cachename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cachedir</span><span class="p">,</span> <span class="n">md5</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cachename</span><span class="p">):</span>
+        <span class="n">fh</span> <span class="o">=</span> <span class="nb">file</span><span class="p">(</span><span class="n">cachename</span><span class="p">)</span>
+        <span class="n">verbose</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="s">&#39;Using cachefile </span><span class="si">%s</span><span class="s"> for </span><span class="si">%s</span><span class="s">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">cachename</span><span class="p">,</span> <span class="n">ticker</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">cachedir</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">cachedir</span><span class="p">)</span>
+        <span class="n">urlfh</span> <span class="o">=</span> <span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+
+        <span class="n">fh</span> <span class="o">=</span> <span class="nb">file</span><span class="p">(</span><span class="n">cachename</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+        <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">urlfh</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+        <span class="n">fh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">verbose</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="s">&#39;Saved </span><span class="si">%s</span><span class="s"> data to cache file </span><span class="si">%s</span><span class="s">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">ticker</span><span class="p">,</span> <span class="n">cachename</span><span class="p">))</span>
+        <span class="n">fh</span> <span class="o">=</span> <span class="nb">file</span><span class="p">(</span><span class="n">cachename</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fh</span>
+
+</div>
+<div class="viewcode-block" id="quotes_historical_yahoo"><a class="viewcode-back" href="../newfinance.html#newfinance.quotes_historical_yahoo">[docs]</a><span class="k">def</span> <span class="nf">quotes_historical_yahoo</span><span class="p">(</span><span class="n">ticker</span><span class="p">,</span> <span class="n">date1</span><span class="p">,</span> <span class="n">date2</span><span class="p">,</span> <span class="n">asobject</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                                        <span class="n">adjusted</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">cachename</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get historical data for ticker between date1 and date2.  date1 and</span>
+<span class="sd">    date2 are datetime instances or (year, month, day) sequences.</span>
+
+<span class="sd">    See :func:`parse_yahoo_historical` for explanation of output formats</span>
+<span class="sd">    and the *asobject* and *adjusted* kwargs.</span>
+
+<span class="sd">    Ex:</span>
+<span class="sd">    sp = f.quotes_historical_yahoo(&#39;^GSPC&#39;, d1, d2,</span>
+<span class="sd">                                asobject=True, adjusted=True)</span>
+<span class="sd">    returns = (sp.open[1:] - sp.open[:-1])/sp.open[1:]</span>
+<span class="sd">    [n,bins,patches] = hist(returns, 100)</span>
+<span class="sd">    mu = mean(returns)</span>
+<span class="sd">    sigma = std(returns)</span>
+<span class="sd">    x = normpdf(bins, mu, sigma)</span>
+<span class="sd">    plot(bins, x, color=&#39;red&#39;, lw=2)</span>
+
+<span class="sd">    cachename is the name of the local file cache.  If None, will</span>
+<span class="sd">    default to the md5 hash or the url (which incorporates the ticker</span>
+<span class="sd">    and date range)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Maybe enable a warning later as part of a slow transition</span>
+    <span class="c"># to using None instead of False.</span>
+    <span class="c">#if asobject is False:</span>
+    <span class="c">#    warnings.warn(&quot;Recommend changing to asobject=None&quot;)</span>
+
+    <span class="n">fh</span> <span class="o">=</span> <span class="n">fetch_historical_yahoo</span><span class="p">(</span><span class="n">ticker</span><span class="p">,</span> <span class="n">date1</span><span class="p">,</span> <span class="n">date2</span><span class="p">,</span> <span class="n">cachename</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">parse_yahoo_historical</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="n">asobject</span><span class="o">=</span><span class="n">asobject</span><span class="p">,</span>
+                                            <span class="n">adjusted</span><span class="o">=</span><span class="n">adjusted</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+    <span class="k">except</span> <span class="ne">IOError</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&#39;fh failure</span><span class="se">\n</span><span class="si">%s</span><span class="s">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">exc</span><span class="o">.</span><span class="n">strerror</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">return</span> <span class="n">ret</span>
+</div>
+<div class="viewcode-block" id="plot_day_summary"><a class="viewcode-back" href="../newfinance.html#newfinance.plot_day_summary">[docs]</a><span class="k">def</span> <span class="nf">plot_day_summary</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">quotes</span><span class="p">,</span> <span class="n">ticksize</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                     <span class="n">colorup</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span> <span class="n">colordown</span><span class="o">=</span><span class="s">&#39;r&#39;</span><span class="p">,</span>
+                     <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    quotes is a sequence of (time, open, close, high, low, ...) sequences</span>
+
+<span class="sd">    Represent the time, open, close, high, low as a vertical line</span>
+<span class="sd">    ranging from low to high.  The left tick is the open and the right</span>
+<span class="sd">    tick is the close.</span>
+
+<span class="sd">    time must be in float date format - see date2num</span>
+
+<span class="sd">    ax          : an Axes instance to plot to</span>
+<span class="sd">    ticksize    : open/close tick marker in points</span>
+<span class="sd">    colorup     : the color of the lines where close &gt;= open</span>
+<span class="sd">    colordown   : the color of the lines where close &lt;  open</span>
+<span class="sd">    return value is a list of lines added</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">quotes</span><span class="p">:</span>
+
+        <span class="n">t</span><span class="p">,</span> <span class="nb">open</span><span class="p">,</span> <span class="n">close</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">low</span> <span class="o">=</span> <span class="n">q</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">close</span><span class="o">&gt;=</span><span class="nb">open</span> <span class="p">:</span> <span class="n">color</span> <span class="o">=</span> <span class="n">colorup</span>
+        <span class="k">else</span>           <span class="p">:</span> <span class="n">color</span> <span class="o">=</span> <span class="n">colordown</span>
+
+        <span class="n">vline</span> <span class="o">=</span> <span class="n">Line2D</span><span class="p">(</span>
+            <span class="n">xdata</span><span class="o">=</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="p">),</span> <span class="n">ydata</span><span class="o">=</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">),</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+            <span class="n">antialiased</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>   <span class="c"># no need to antialias vert lines</span>
+            <span class="p">)</span>
+
+        <span class="n">oline</span> <span class="o">=</span> <span class="n">Line2D</span><span class="p">(</span>
+            <span class="n">xdata</span><span class="o">=</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="p">),</span> <span class="n">ydata</span><span class="o">=</span><span class="p">(</span><span class="nb">open</span><span class="p">,</span> <span class="nb">open</span><span class="p">),</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+            <span class="n">antialiased</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+            <span class="n">marker</span><span class="o">=</span><span class="n">TICKLEFT</span><span class="p">,</span>
+            <span class="n">markersize</span><span class="o">=</span><span class="n">ticksize</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">cline</span> <span class="o">=</span> <span class="n">Line2D</span><span class="p">(</span>
+            <span class="n">xdata</span><span class="o">=</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="p">),</span> <span class="n">ydata</span><span class="o">=</span><span class="p">(</span><span class="n">close</span><span class="p">,</span> <span class="n">close</span><span class="p">),</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+            <span class="n">antialiased</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+            <span class="n">markersize</span><span class="o">=</span><span class="n">ticksize</span><span class="p">,</span>
+            <span class="n">marker</span><span class="o">=</span><span class="n">TICKRIGHT</span><span class="p">)</span>
+
+        <span class="n">lines</span><span class="o">.</span><span class="n">extend</span><span class="p">((</span><span class="n">vline</span><span class="p">,</span> <span class="n">oline</span><span class="p">,</span> <span class="n">cline</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">add_line</span><span class="p">(</span><span class="n">vline</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">add_line</span><span class="p">(</span><span class="n">oline</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">add_line</span><span class="p">(</span><span class="n">cline</span><span class="p">)</span>
+
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">autoscale_view</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">lines</span>
+
+</div>
+<div class="viewcode-block" id="candlestick"><a class="viewcode-back" href="../newfinance.html#newfinance.candlestick">[docs]</a><span class="k">def</span> <span class="nf">candlestick</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">quotes</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">colorup</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span> <span class="n">colordown</span><span class="o">=</span><span class="s">&#39;r&#39;</span><span class="p">,</span>
+                <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    quotes is a sequence of (time, open, close, high, low, ...) sequences.</span>
+<span class="sd">    As long as the first 5 elements are these values,</span>
+<span class="sd">    the record can be as long as you want (eg it may store volume).</span>
+
+<span class="sd">    time must be in float days format - see date2num</span>
+
+<span class="sd">    Plot the time, open, close, high, low as a vertical line ranging</span>
+<span class="sd">    from low to high.  Use a rectangular bar to represent the</span>
+<span class="sd">    open-close span.  If close &gt;= open, use colorup to color the bar,</span>
+<span class="sd">    otherwise use colordown</span>
+
+<span class="sd">    ax          : an Axes instance to plot to</span>
+<span class="sd">    width       : fraction of a day for the rectangle width</span>
+<span class="sd">    colorup     : the color of the rectangle where close &gt;= open</span>
+<span class="sd">    colordown   : the color of the rectangle where close &lt;  open</span>
+<span class="sd">    alpha       : the rectangle alpha level</span>
+
+<span class="sd">    return value is lines, patches where lines is a list of lines</span>
+<span class="sd">    added and patches is a list of the rectangle patches added</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">OFFSET</span> <span class="o">=</span> <span class="n">width</span><span class="o">/</span><span class="mf">2.0</span>
+
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">patches</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">quotes</span><span class="p">:</span>
+        <span class="n">t</span><span class="p">,</span> <span class="nb">open</span><span class="p">,</span> <span class="n">close</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">low</span> <span class="o">=</span> <span class="n">q</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">close</span><span class="o">&gt;=</span><span class="nb">open</span> <span class="p">:</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="n">colorup</span>
+            <span class="n">lower</span> <span class="o">=</span> <span class="nb">open</span>
+            <span class="n">height</span> <span class="o">=</span> <span class="n">close</span><span class="o">-</span><span class="nb">open</span>
+        <span class="k">else</span>           <span class="p">:</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="n">colordown</span>
+            <span class="n">lower</span> <span class="o">=</span> <span class="n">close</span>
+            <span class="n">height</span> <span class="o">=</span> <span class="nb">open</span><span class="o">-</span><span class="n">close</span>
+
+        <span class="n">vline</span> <span class="o">=</span> <span class="n">Line2D</span><span class="p">(</span>
+            <span class="n">xdata</span><span class="o">=</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="p">),</span> <span class="n">ydata</span><span class="o">=</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">),</span>
+            <span class="n">color</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span>
+            <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+            <span class="n">antialiased</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">rect</span> <span class="o">=</span> <span class="n">Rectangle</span><span class="p">(</span>
+            <span class="n">xy</span>    <span class="o">=</span> <span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="n">OFFSET</span><span class="p">,</span> <span class="n">lower</span><span class="p">),</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="n">width</span><span class="p">,</span>
+            <span class="n">height</span> <span class="o">=</span> <span class="n">height</span><span class="p">,</span>
+            <span class="n">facecolor</span> <span class="o">=</span> <span class="n">color</span><span class="p">,</span>
+            <span class="n">edgecolor</span> <span class="o">=</span> <span class="n">color</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">rect</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
+
+
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vline</span><span class="p">)</span>
+        <span class="n">patches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">add_line</span><span class="p">(</span><span class="n">vline</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">autoscale_view</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">lines</span><span class="p">,</span> <span class="n">patches</span>
+
+</div>
+<div class="viewcode-block" id="plot_day_summary2"><a class="viewcode-back" href="../newfinance.html#newfinance.plot_day_summary2">[docs]</a><span class="k">def</span> <span class="nf">plot_day_summary2</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">opens</span><span class="p">,</span> <span class="n">closes</span><span class="p">,</span> <span class="n">highs</span><span class="p">,</span> <span class="n">lows</span><span class="p">,</span> <span class="n">ticksize</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                      <span class="n">colorup</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span> <span class="n">colordown</span><span class="o">=</span><span class="s">&#39;r&#39;</span><span class="p">,</span>
+                     <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Represent the time, open, close, high, low as a vertical line</span>
+<span class="sd">    ranging from low to high.  The left tick is the open and the right</span>
+<span class="sd">    tick is the close.</span>
+
+<span class="sd">    ax          : an Axes instance to plot to</span>
+<span class="sd">    ticksize    : size of open and close ticks in points</span>
+<span class="sd">    colorup     : the color of the lines where close &gt;= open</span>
+<span class="sd">    colordown   : the color of the lines where close &lt;  open</span>
+
+<span class="sd">    return value is a list of lines added</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c"># note this code assumes if any value open, close, low, high is</span>
+    <span class="c"># missing they all are missing</span>
+
+    <span class="n">rangeSegments</span> <span class="o">=</span> <span class="p">[</span> <span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">low</span><span class="p">),</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">high</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lows</span><span class="p">)),</span> <span class="n">lows</span><span class="p">,</span> <span class="n">highs</span><span class="p">)</span> <span class="k">if</span> <span class="n">low</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="p">]</span>
+
+    <span class="c"># the ticks will be from ticksize to 0 in points at the origin and</span>
+    <span class="c"># we&#39;ll translate these to the i, close location</span>
+    <span class="n">openSegments</span> <span class="o">=</span> <span class="p">[</span>  <span class="p">((</span><span class="o">-</span><span class="n">ticksize</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="p">]</span>
+
+    <span class="c"># the ticks will be from 0 to ticksize in points at the origin and</span>
+    <span class="c"># we&#39;ll translate these to the i, close location</span>
+    <span class="n">closeSegments</span> <span class="o">=</span> <span class="p">[</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">ticksize</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="p">]</span>
+
+
+    <span class="n">offsetsOpen</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">open</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="nb">open</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">opens</span><span class="p">)),</span> <span class="n">opens</span><span class="p">)</span> <span class="k">if</span> <span class="nb">open</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="p">]</span>
+
+    <span class="n">offsetsClose</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">close</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">close</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">closes</span><span class="p">)),</span> <span class="n">closes</span><span class="p">)</span> <span class="k">if</span> <span class="n">close</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="p">]</span>
+
+
+    <span class="n">scale</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">dpi</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="mf">72.0</span><span class="p">)</span>
+
+    <span class="n">tickTransform</span> <span class="o">=</span> <span class="n">Affine2D</span><span class="p">()</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+    <span class="n">r</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">colorConverter</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="n">colorup</span><span class="p">)</span>
+    <span class="n">colorup</span> <span class="o">=</span> <span class="n">r</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="mi">1</span>
+    <span class="n">r</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">colorConverter</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="n">colordown</span><span class="p">)</span>
+    <span class="n">colordown</span> <span class="o">=</span> <span class="n">r</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="mi">1</span>
+    <span class="n">colord</span> <span class="o">=</span> <span class="p">{</span> <span class="bp">True</span> <span class="p">:</span> <span class="n">colorup</span><span class="p">,</span>
+               <span class="bp">False</span> <span class="p">:</span> <span class="n">colordown</span><span class="p">,</span>
+               <span class="p">}</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="n">colord</span><span class="p">[</span><span class="nb">open</span><span class="o">&lt;</span><span class="n">close</span><span class="p">]</span> <span class="k">for</span> <span class="nb">open</span><span class="p">,</span> <span class="n">close</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">opens</span><span class="p">,</span> <span class="n">closes</span><span class="p">)</span> <span class="k">if</span> <span class="nb">open</span><span class="o">!=-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">close</span> <span class="o">!=-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rangeSegments</span><span class="p">)</span><span class="o">==</span><span class="nb">len</span><span class="p">(</span><span class="n">offsetsOpen</span><span class="p">))</span>
+    <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">offsetsOpen</span><span class="p">)</span><span class="o">==</span><span class="nb">len</span><span class="p">(</span><span class="n">offsetsClose</span><span class="p">))</span>
+    <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">offsetsClose</span><span class="p">)</span><span class="o">==</span><span class="nb">len</span><span class="p">(</span><span class="n">colors</span><span class="p">))</span>
+
+    <span class="n">useAA</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>   <span class="c"># use tuple here</span>
+    <span class="n">lw</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>      <span class="c"># and here</span>
+    <span class="n">rangeCollection</span> <span class="o">=</span> <span class="n">LineCollection</span><span class="p">(</span><span class="n">rangeSegments</span><span class="p">,</span>
+                                     <span class="n">colors</span>       <span class="o">=</span> <span class="n">colors</span><span class="p">,</span>
+                                     <span class="n">linewidths</span>   <span class="o">=</span> <span class="n">lw</span><span class="p">,</span>
+                                     <span class="n">antialiaseds</span> <span class="o">=</span> <span class="n">useAA</span><span class="p">,</span>
+                                     <span class="p">)</span>
+
+    <span class="n">openCollection</span> <span class="o">=</span> <span class="n">LineCollection</span><span class="p">(</span><span class="n">openSegments</span><span class="p">,</span>
+                                    <span class="n">colors</span>       <span class="o">=</span> <span class="n">colors</span><span class="p">,</span>
+                                    <span class="n">antialiaseds</span> <span class="o">=</span> <span class="n">useAA</span><span class="p">,</span>
+                                    <span class="n">linewidths</span>   <span class="o">=</span> <span class="n">lw</span><span class="p">,</span>
+                                    <span class="n">offsets</span>      <span class="o">=</span> <span class="n">offsetsOpen</span><span class="p">,</span>
+                                    <span class="n">transOffset</span>  <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="p">,</span>
+                                   <span class="p">)</span>
+    <span class="n">openCollection</span><span class="o">.</span><span class="n">set_transform</span><span class="p">(</span><span class="n">tickTransform</span><span class="p">)</span>
+
+    <span class="n">closeCollection</span> <span class="o">=</span> <span class="n">LineCollection</span><span class="p">(</span><span class="n">closeSegments</span><span class="p">,</span>
+                                     <span class="n">colors</span>       <span class="o">=</span> <span class="n">colors</span><span class="p">,</span>
+                                     <span class="n">antialiaseds</span> <span class="o">=</span> <span class="n">useAA</span><span class="p">,</span>
+                                     <span class="n">linewidths</span>   <span class="o">=</span> <span class="n">lw</span><span class="p">,</span>
+                                     <span class="n">offsets</span>      <span class="o">=</span> <span class="n">offsetsClose</span><span class="p">,</span>
+                                     <span class="n">transOffset</span>  <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="p">,</span>
+                                     <span class="p">)</span>
+    <span class="n">closeCollection</span><span class="o">.</span><span class="n">set_transform</span><span class="p">(</span><span class="n">tickTransform</span><span class="p">)</span>
+
+    <span class="n">minpy</span><span class="p">,</span> <span class="n">maxx</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">rangeSegments</span><span class="p">))</span>
+    <span class="n">miny</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">low</span> <span class="k">for</span> <span class="n">low</span> <span class="ow">in</span> <span class="n">lows</span> <span class="k">if</span> <span class="n">low</span> <span class="o">!=-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">maxy</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">high</span> <span class="k">for</span> <span class="n">high</span> <span class="ow">in</span> <span class="n">highs</span> <span class="k">if</span> <span class="n">high</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">corners</span> <span class="o">=</span> <span class="p">(</span><span class="n">minpy</span><span class="p">,</span> <span class="n">miny</span><span class="p">),</span> <span class="p">(</span><span class="n">maxx</span><span class="p">,</span> <span class="n">maxy</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">update_datalim</span><span class="p">(</span><span class="n">corners</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">autoscale_view</span><span class="p">()</span>
+
+    <span class="c"># add these last</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">rangeCollection</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">openCollection</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">closeCollection</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rangeCollection</span><span class="p">,</span> <span class="n">openCollection</span><span class="p">,</span> <span class="n">closeCollection</span>
+
+</div>
+<div class="viewcode-block" id="candlestick2"><a class="viewcode-back" href="../newfinance.html#newfinance.candlestick2">[docs]</a><span class="k">def</span> <span class="nf">candlestick2</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">opens</span><span class="p">,</span> <span class="n">closes</span><span class="p">,</span> <span class="n">highs</span><span class="p">,</span> <span class="n">lows</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                 <span class="n">colorup</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span> <span class="n">colordown</span><span class="o">=</span><span class="s">&#39;r&#39;</span><span class="p">,</span>
+                 <span class="n">alpha</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span>
+                <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Represent the open, close as a bar line and high low range as a</span>
+<span class="sd">    vertical line.</span>
+
+
+<span class="sd">    ax          : an Axes instance to plot to</span>
+<span class="sd">    width       : the bar width in points</span>
+<span class="sd">    colorup     : the color of the lines where close &gt;= open</span>
+<span class="sd">    colordown   : the color of the lines where close &lt;  open</span>
+<span class="sd">    alpha       : bar transparency</span>
+
+<span class="sd">    return value is lineCollection, barCollection</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c"># note this code assumes if any value open, close, low, high is</span>
+    <span class="c"># missing they all are missing</span>
+
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">width</span><span class="o">/</span><span class="mf">2.</span>
+    <span class="n">barVerts</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span> <span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="n">delta</span><span class="p">,</span> <span class="nb">open</span><span class="p">),</span> <span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="n">delta</span><span class="p">,</span> <span class="n">close</span><span class="p">),</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="n">delta</span><span class="p">,</span> <span class="n">close</span><span class="p">),</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="n">delta</span><span class="p">,</span> <span class="nb">open</span><span class="p">)</span> <span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="nb">open</span><span class="p">,</span> <span class="n">close</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">opens</span><span class="p">)),</span> <span class="n">opens</span><span class="p">,</span> <span class="n">closes</span><span class="p">)</span> <span class="k">if</span> <span class="nb">open</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">close</span><span class="o">!=-</span><span class="mi">1</span> <span class="p">]</span>
+
+    <span class="n">rangeSegments</span> <span class="o">=</span> <span class="p">[</span> <span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">low</span><span class="p">),</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">high</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lows</span><span class="p">)),</span> <span class="n">lows</span><span class="p">,</span> <span class="n">highs</span><span class="p">)</span> <span class="k">if</span> <span class="n">low</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="p">]</span>
+
+
+
+    <span class="n">r</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">colorConverter</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="n">colorup</span><span class="p">)</span>
+    <span class="n">colorup</span> <span class="o">=</span> <span class="n">r</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">alpha</span>
+    <span class="n">r</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">colorConverter</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="n">colordown</span><span class="p">)</span>
+    <span class="n">colordown</span> <span class="o">=</span> <span class="n">r</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">alpha</span>
+    <span class="n">colord</span> <span class="o">=</span> <span class="p">{</span> <span class="bp">True</span> <span class="p">:</span> <span class="n">colorup</span><span class="p">,</span>
+               <span class="bp">False</span> <span class="p">:</span> <span class="n">colordown</span><span class="p">,</span>
+               <span class="p">}</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="n">colord</span><span class="p">[</span><span class="nb">open</span><span class="o">&lt;</span><span class="n">close</span><span class="p">]</span> <span class="k">for</span> <span class="nb">open</span><span class="p">,</span> <span class="n">close</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">opens</span><span class="p">,</span> <span class="n">closes</span><span class="p">)</span> <span class="k">if</span> <span class="nb">open</span><span class="o">!=-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">close</span> <span class="o">!=-</span><span class="mi">1</span><span class="p">]</span>
+
+
+    <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">barVerts</span><span class="p">)</span><span class="o">==</span><span class="nb">len</span><span class="p">(</span><span class="n">rangeSegments</span><span class="p">))</span>
+
+    <span class="n">useAA</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>  <span class="c"># use tuple here</span>
+    <span class="n">lw</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>   <span class="c"># and here</span>
+    <span class="n">rangeCollection</span> <span class="o">=</span> <span class="n">LineCollection</span><span class="p">(</span><span class="n">rangeSegments</span><span class="p">,</span>
+                                     <span class="n">colors</span>       <span class="o">=</span> <span class="p">(</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">),</span>
+                                     <span class="n">linewidths</span>   <span class="o">=</span> <span class="n">lw</span><span class="p">,</span>
+                                     <span class="n">antialiaseds</span> <span class="o">=</span> <span class="n">useAA</span><span class="p">,</span>
+                                     <span class="p">)</span>
+
+
+    <span class="n">barCollection</span> <span class="o">=</span> <span class="n">PolyCollection</span><span class="p">(</span><span class="n">barVerts</span><span class="p">,</span>
+                                   <span class="n">facecolors</span>   <span class="o">=</span> <span class="n">colors</span><span class="p">,</span>
+                                   <span class="n">edgecolors</span>   <span class="o">=</span> <span class="p">(</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">),</span>
+                                   <span class="n">antialiaseds</span> <span class="o">=</span> <span class="n">useAA</span><span class="p">,</span>
+                                   <span class="n">linewidths</span>   <span class="o">=</span> <span class="n">lw</span><span class="p">,</span>
+                                   <span class="p">)</span>
+
+    <span class="n">minx</span><span class="p">,</span> <span class="n">maxx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">rangeSegments</span><span class="p">)</span>
+    <span class="n">miny</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">low</span> <span class="k">for</span> <span class="n">low</span> <span class="ow">in</span> <span class="n">lows</span> <span class="k">if</span> <span class="n">low</span> <span class="o">!=-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">maxy</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">high</span> <span class="k">for</span> <span class="n">high</span> <span class="ow">in</span> <span class="n">highs</span> <span class="k">if</span> <span class="n">high</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">corners</span> <span class="o">=</span> <span class="p">(</span><span class="n">minx</span><span class="p">,</span> <span class="n">miny</span><span class="p">),</span> <span class="p">(</span><span class="n">maxx</span><span class="p">,</span> <span class="n">maxy</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">update_datalim</span><span class="p">(</span><span class="n">corners</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">autoscale_view</span><span class="p">()</span>
+
+    <span class="c"># add these last</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">barCollection</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">rangeCollection</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rangeCollection</span><span class="p">,</span> <span class="n">barCollection</span>
+</div>
+<div class="viewcode-block" id="volume_overlay"><a class="viewcode-back" href="../newfinance.html#newfinance.volume_overlay">[docs]</a><span class="k">def</span> <span class="nf">volume_overlay</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">opens</span><span class="p">,</span> <span class="n">closes</span><span class="p">,</span> <span class="n">volumes</span><span class="p">,</span>
+                   <span class="n">colorup</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span> <span class="n">colordown</span><span class="o">=</span><span class="s">&#39;r&#39;</span><span class="p">,</span>
+                   <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add a volume overlay to the current axes.  The opens and closes</span>
+<span class="sd">    are used to determine the color of the bar.  -1 is missing.  If a</span>
+<span class="sd">    value is missing on one it must be missing on all</span>
+
+<span class="sd">    ax          : an Axes instance to plot to</span>
+<span class="sd">    width       : the bar width in points</span>
+<span class="sd">    colorup     : the color of the lines where close &gt;= open</span>
+<span class="sd">    colordown   : the color of the lines where close &lt;  open</span>
+<span class="sd">    alpha       : bar transparency</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">r</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">colorConverter</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="n">colorup</span><span class="p">)</span>
+    <span class="n">colorup</span> <span class="o">=</span> <span class="n">r</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">alpha</span>
+    <span class="n">r</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">colorConverter</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="n">colordown</span><span class="p">)</span>
+    <span class="n">colordown</span> <span class="o">=</span> <span class="n">r</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">alpha</span>
+    <span class="n">colord</span> <span class="o">=</span> <span class="p">{</span> <span class="bp">True</span> <span class="p">:</span> <span class="n">colorup</span><span class="p">,</span>
+               <span class="bp">False</span> <span class="p">:</span> <span class="n">colordown</span><span class="p">,</span>
+               <span class="p">}</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="n">colord</span><span class="p">[</span><span class="nb">open</span><span class="o">&lt;</span><span class="n">close</span><span class="p">]</span> <span class="k">for</span> <span class="nb">open</span><span class="p">,</span> <span class="n">close</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">opens</span><span class="p">,</span> <span class="n">closes</span><span class="p">)</span> <span class="k">if</span> <span class="nb">open</span><span class="o">!=-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">close</span> <span class="o">!=-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">width</span><span class="o">/</span><span class="mf">2.</span>
+    <span class="n">bars</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span> <span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="n">delta</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="n">delta</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="n">delta</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="n">delta</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">volumes</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="p">]</span>
+
+    <span class="n">barCollection</span> <span class="o">=</span> <span class="n">PolyCollection</span><span class="p">(</span><span class="n">bars</span><span class="p">,</span>
+                                   <span class="n">facecolors</span>   <span class="o">=</span> <span class="n">colors</span><span class="p">,</span>
+                                   <span class="n">edgecolors</span>   <span class="o">=</span> <span class="p">(</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">),</span>
+                                   <span class="n">antialiaseds</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,),</span>
+                                   <span class="n">linewidths</span>   <span class="o">=</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,),</span>
+                                   <span class="p">)</span>
+
+    <span class="n">corners</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bars</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">volumes</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">update_datalim</span><span class="p">(</span><span class="n">corners</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">autoscale_view</span><span class="p">()</span>
+
+    <span class="c"># add these last</span>
+    <span class="k">return</span> <span class="n">barCollection</span>
+
+</div>
+<div class="viewcode-block" id="volume_overlay2"><a class="viewcode-back" href="../newfinance.html#newfinance.volume_overlay2">[docs]</a><span class="k">def</span> <span class="nf">volume_overlay2</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">closes</span><span class="p">,</span> <span class="n">volumes</span><span class="p">,</span>
+                   <span class="n">colorup</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span> <span class="n">colordown</span><span class="o">=</span><span class="s">&#39;r&#39;</span><span class="p">,</span>
+                   <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add a volume overlay to the current axes.  The closes are used to</span>
+<span class="sd">    determine the color of the bar.  -1 is missing.  If a value is</span>
+<span class="sd">    missing on one it must be missing on all</span>
+
+<span class="sd">    ax          : an Axes instance to plot to</span>
+<span class="sd">    width       : the bar width in points</span>
+<span class="sd">    colorup     : the color of the lines where close &gt;= open</span>
+<span class="sd">    colordown   : the color of the lines where close &lt;  open</span>
+<span class="sd">    alpha       : bar transparency</span>
+
+<span class="sd">    nb: first point is not displayed - it is used only for choosing the</span>
+<span class="sd">    right color</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">volume_overlay</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="n">closes</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">closes</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span><span class="n">volumes</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span><span class="n">colorup</span><span class="p">,</span><span class="n">colordown</span><span class="p">,</span><span class="n">width</span><span class="p">,</span><span class="n">alpha</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="volume_overlay3"><a class="viewcode-back" href="../newfinance.html#newfinance.volume_overlay3">[docs]</a><span class="k">def</span> <span class="nf">volume_overlay3</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">quotes</span><span class="p">,</span>
+                   <span class="n">colorup</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span> <span class="n">colordown</span><span class="o">=</span><span class="s">&#39;r&#39;</span><span class="p">,</span>
+                   <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add a volume overlay to the current axes.  quotes is a list of (d,</span>
+<span class="sd">    open, close, high, low, volume) and close-open is used to</span>
+<span class="sd">    determine the color of the bar</span>
+
+<span class="sd">    kwarg</span>
+<span class="sd">    width       : the bar width in points</span>
+<span class="sd">    colorup     : the color of the lines where close1 &gt;= close0</span>
+<span class="sd">    colordown   : the color of the lines where close1 &lt;  close0</span>
+<span class="sd">    alpha       : bar transparency</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">r</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">colorConverter</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="n">colorup</span><span class="p">)</span>
+    <span class="n">colorup</span> <span class="o">=</span> <span class="n">r</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">alpha</span>
+    <span class="n">r</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">colorConverter</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="n">colordown</span><span class="p">)</span>
+    <span class="n">colordown</span> <span class="o">=</span> <span class="n">r</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">alpha</span>
+    <span class="n">colord</span> <span class="o">=</span> <span class="p">{</span> <span class="bp">True</span> <span class="p">:</span> <span class="n">colorup</span><span class="p">,</span>
+               <span class="bp">False</span> <span class="p">:</span> <span class="n">colordown</span><span class="p">,</span>
+               <span class="p">}</span>
+
+    <span class="n">dates</span><span class="p">,</span> <span class="n">opens</span><span class="p">,</span> <span class="n">closes</span><span class="p">,</span> <span class="n">highs</span><span class="p">,</span> <span class="n">lows</span><span class="p">,</span> <span class="n">volumes</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">quotes</span><span class="p">)</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="n">colord</span><span class="p">[</span><span class="n">close1</span><span class="o">&gt;=</span><span class="n">close0</span><span class="p">]</span> <span class="k">for</span> <span class="n">close0</span><span class="p">,</span> <span class="n">close1</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">closes</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">closes</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span> <span class="k">if</span> <span class="n">close0</span><span class="o">!=-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">close1</span> <span class="o">!=-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">colors</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">colord</span><span class="p">[</span><span class="n">closes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;=</span><span class="n">opens</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+
+    <span class="n">right</span> <span class="o">=</span> <span class="n">width</span><span class="o">/</span><span class="mf">2.0</span>
+    <span class="n">left</span> <span class="o">=</span> <span class="o">-</span><span class="n">width</span><span class="o">/</span><span class="mf">2.0</span>
+
+
+    <span class="n">bars</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span> <span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">volume</span><span class="p">),</span> <span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">volume</span><span class="p">),</span> <span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="nb">open</span><span class="p">,</span> <span class="n">close</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">volume</span> <span class="ow">in</span> <span class="n">quotes</span><span class="p">]</span>
+
+    <span class="n">sx</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">dpi</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="mf">72.0</span><span class="p">)</span>  <span class="c"># scale for points</span>
+    <span class="n">sy</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">bbox</span><span class="o">.</span><span class="n">height</span> <span class="o">/</span> <span class="n">ax</span><span class="o">.</span><span class="n">viewLim</span><span class="o">.</span><span class="n">height</span>
+
+    <span class="n">barTransform</span> <span class="o">=</span> <span class="n">Affine2D</span><span class="p">()</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">sx</span><span class="p">,</span><span class="n">sy</span><span class="p">)</span>
+
+    <span class="n">dates</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="nb">open</span><span class="p">,</span> <span class="n">close</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">volume</span> <span class="ow">in</span> <span class="n">quotes</span><span class="p">]</span>
+    <span class="n">offsetsBars</span> <span class="o">=</span> <span class="p">[(</span><span class="n">d</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dates</span><span class="p">]</span>
+
+    <span class="n">useAA</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>  <span class="c"># use tuple here</span>
+    <span class="n">lw</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>   <span class="c"># and here</span>
+    <span class="n">barCollection</span> <span class="o">=</span> <span class="n">PolyCollection</span><span class="p">(</span><span class="n">bars</span><span class="p">,</span>
+                                   <span class="n">facecolors</span>   <span class="o">=</span> <span class="n">colors</span><span class="p">,</span>
+                                   <span class="n">edgecolors</span>   <span class="o">=</span> <span class="p">(</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">),</span>
+                                   <span class="n">antialiaseds</span> <span class="o">=</span> <span class="n">useAA</span><span class="p">,</span>
+                                   <span class="n">linewidths</span>   <span class="o">=</span> <span class="n">lw</span><span class="p">,</span>
+                                   <span class="n">offsets</span>      <span class="o">=</span> <span class="n">offsetsBars</span><span class="p">,</span>
+                                   <span class="n">transOffset</span>  <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="p">,</span>
+                                   <span class="p">)</span>
+    <span class="n">barCollection</span><span class="o">.</span><span class="n">set_transform</span><span class="p">(</span><span class="n">barTransform</span><span class="p">)</span>
+
+
+
+
+
+
+    <span class="n">minpy</span><span class="p">,</span> <span class="n">maxx</span> <span class="o">=</span> <span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">dates</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">dates</span><span class="p">))</span>
+    <span class="n">miny</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">maxy</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">volume</span> <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="nb">open</span><span class="p">,</span> <span class="n">close</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">volume</span> <span class="ow">in</span> <span class="n">quotes</span><span class="p">])</span>
+    <span class="n">corners</span> <span class="o">=</span> <span class="p">(</span><span class="n">minpy</span><span class="p">,</span> <span class="n">miny</span><span class="p">),</span> <span class="p">(</span><span class="n">maxx</span><span class="p">,</span> <span class="n">maxy</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">update_datalim</span><span class="p">(</span><span class="n">corners</span><span class="p">)</span>
+    <span class="c">#print &#39;datalim&#39;, ax.dataLim.bounds</span>
+    <span class="c">#print &#39;viewlim&#39;, ax.viewLim.bounds</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">barCollection</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">autoscale_view</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">barCollection</span>
+</div>
+<div class="viewcode-block" id="index_bar"><a class="viewcode-back" href="../newfinance.html#newfinance.index_bar">[docs]</a><span class="k">def</span> <span class="nf">index_bar</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span>
+              <span class="n">facecolor</span><span class="o">=</span><span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">&#39;l&#39;</span><span class="p">,</span>
+              <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add a bar collection graph with height vals (-1 is missing).</span>
+
+<span class="sd">    ax          : an Axes instance to plot to</span>
+<span class="sd">    width       : the bar width in points</span>
+<span class="sd">    alpha       : bar transparency</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">facecolors</span> <span class="o">=</span> <span class="p">(</span><span class="n">colorConverter</span><span class="o">.</span><span class="n">to_rgba</span><span class="p">(</span><span class="n">facecolor</span><span class="p">,</span> <span class="n">alpha</span><span class="p">),)</span>
+    <span class="n">edgecolors</span> <span class="o">=</span> <span class="p">(</span><span class="n">colorConverter</span><span class="o">.</span><span class="n">to_rgba</span><span class="p">(</span><span class="n">edgecolor</span><span class="p">,</span> <span class="n">alpha</span><span class="p">),)</span>
+
+    <span class="n">right</span> <span class="o">=</span> <span class="n">width</span><span class="o">/</span><span class="mf">2.0</span>
+    <span class="n">left</span> <span class="o">=</span> <span class="o">-</span><span class="n">width</span><span class="o">/</span><span class="mf">2.0</span>
+
+
+    <span class="n">bars</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span> <span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span> <span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span> <span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vals</span> <span class="k">if</span> <span class="n">v</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="p">]</span>
+
+    <span class="n">sx</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">dpi</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="mf">72.0</span><span class="p">)</span>  <span class="c"># scale for points</span>
+    <span class="n">sy</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">bbox</span><span class="o">.</span><span class="n">height</span> <span class="o">/</span> <span class="n">ax</span><span class="o">.</span><span class="n">viewLim</span><span class="o">.</span><span class="n">height</span>
+
+    <span class="n">barTransform</span> <span class="o">=</span> <span class="n">Affine2D</span><span class="p">()</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">sx</span><span class="p">,</span><span class="n">sy</span><span class="p">)</span>
+
+    <span class="n">offsetsBars</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="p">]</span>
+
+    <span class="n">barCollection</span> <span class="o">=</span> <span class="n">PolyCollection</span><span class="p">(</span><span class="n">bars</span><span class="p">,</span>
+                                   <span class="n">facecolors</span>   <span class="o">=</span> <span class="n">facecolors</span><span class="p">,</span>
+                                   <span class="n">edgecolors</span>   <span class="o">=</span> <span class="n">edgecolors</span><span class="p">,</span>
+                                   <span class="n">antialiaseds</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,),</span>
+                                   <span class="n">linewidths</span>   <span class="o">=</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,),</span>
+                                   <span class="n">offsets</span>      <span class="o">=</span> <span class="n">offsetsBars</span><span class="p">,</span>
+                                   <span class="n">transOffset</span>  <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="p">,</span>
+                                   <span class="p">)</span>
+    <span class="n">barCollection</span><span class="o">.</span><span class="n">set_transform</span><span class="p">(</span><span class="n">barTransform</span><span class="p">)</span>
+
+
+
+
+
+
+    <span class="n">minpy</span><span class="p">,</span> <span class="n">maxx</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">offsetsBars</span><span class="p">))</span>
+    <span class="n">miny</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">maxy</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vals</span> <span class="k">if</span> <span class="n">v</span><span class="o">!=-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">corners</span> <span class="o">=</span> <span class="p">(</span><span class="n">minpy</span><span class="p">,</span> <span class="n">miny</span><span class="p">),</span> <span class="p">(</span><span class="n">maxx</span><span class="p">,</span> <span class="n">maxy</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">update_datalim</span><span class="p">(</span><span class="n">corners</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">autoscale_view</span><span class="p">()</span>
+
+    <span class="c"># add these last</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">barCollection</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">barCollection</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">finance  documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, G. Barone, J. Bilbao de Mendizabal, A. Katre.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b3.
+    </div>
+  </body>
+</html>

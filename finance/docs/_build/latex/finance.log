@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.9.20)  25 NOV 2013 22:00
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.9.20)  9 DEC 2013 16:29
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -973,7 +973,7 @@ Chapter 8.
 
 ]
 Chapter 9.
-LaTeX Font Info:    Try loading font information for TS1+ptm on input line 504.
+LaTeX Font Info:    Try loading font information for TS1+ptm on input line 612.
 
 (/usr/local/texlive/2012/texmf-dist/tex/latex/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
@@ -986,23 +986,45 @@ File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 ] (./finance.ind [24
 
 
-] [25
+]
+Underfull \hbox (badness 10000) in paragraph at lines 43--44
+[]\T1/ptm/m/n/10 listOllClosingValues() (vir-tual-Mar-ket.virtualMarket
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 52--53
+[]\T1/ptm/m/n/10 m_overAllCapital (vir-tual-Mar-ket.virtualMarket at-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 53--54
+[]\T1/ptm/m/n/10 m_overAllVariation (vir-tual-Mar-ket.virtualMarket at-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 54--55
+[]\T1/ptm/m/n/10 m_startingCapStock (vir-tual-Mar-ket.virtualMarket at-
+ []
+
+[25
+
+] [26
 
 ])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 537.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 537.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 650.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 650.
  (./finance.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 537.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 537.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 650.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 650.
 Package rerunfilecheck Info: File `finance.out' has not changed.
-(rerunfilecheck)             Checksum: 1730A118FCFA5EC27578DEB588834305;563.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 537.
+(rerunfilecheck)             Checksum: 67525686CDB87E3695BE47018A49914E;563.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 650.
  ) 
 Here is how much of TeX's memory you used:
- 8943 strings out of 493488
- 124607 string characters out of 3141326
- 221121 words of memory out of 3000000
- 11952 multiletter control sequences out of 15000+200000
+ 8975 strings out of 493488
+ 125642 string characters out of 3141326
+ 222916 words of memory out of 3000000
+ 11969 multiletter control sequences out of 15000+200000
  55806 words of font info for 60 fonts, out of 3000000 for 9000
  958 hyphenation exceptions out of 8191
  36i,11n,45p,297b,454s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -1015,10 +1037,10 @@ type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1/u
 rw/times/utmb8a.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1/urw/times/u
 tmbi8a.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1/urw/times/utmr8a.pfb
 ></usr/local/texlive/2012/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on finance.pdf (29 pages, 120161 bytes).
+Output written on finance.pdf (30 pages, 126100 bytes).
 PDF statistics:
- 311 PDF objects out of 1000 (max. 8388607)
- 263 compressed objects within 3 object streams
- 69 named destinations out of 1000 (max. 500000)
+ 353 PDF objects out of 1000 (max. 8388607)
+ 303 compressed objects within 4 object streams
+ 84 named destinations out of 1000 (max. 500000)
  109 words of extra memory for PDF output out of 10000 (max. 10000000)
 

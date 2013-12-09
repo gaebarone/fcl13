@@ -14,7 +14,7 @@
 
 
 \title{finance Documentation}
-\date{November 25, 2013}
+\date{December 09, 2013}
 \release{}
 \author{G. Barone, J. Bilbao de Mendizabal, A. Katre}
 \newcommand{\sphinxlogo}{}
@@ -125,7 +125,7 @@ Contents:
 
 
 \chapter{change\_stock module}
-\label{change_stock::doc}\label{change_stock:welcome-to-finance-s-documentation}\label{change_stock:change-stock-module}
+\label{change_stock::doc}\label{change_stock:welcome-to-finance-s-documentation}\label{change_stock:module-change_stock}\label{change_stock:change-stock-module}\index{change\_stock (module)}
 
 \chapter{conf module}
 \label{conf:module-conf}\label{conf:conf-module}\label{conf::doc}\index{conf (module)}
@@ -422,7 +422,7 @@ class for decribing stock evolution
 \index{evolve() (stock.stock method)}
 
 \begin{fulllineitems}
-\phantomsection\label{stock:stock.stock.evolve}\pysiglinewithargsret{\bfcode{evolve}}{\emph{change=0}, \emph{use=False}}{}
+\phantomsection\label{stock:stock.stock.evolve}\pysiglinewithargsret{\bfcode{evolve}}{\emph{change=0}, \emph{use=False}, \emph{timeLow=0}, \emph{timeUp=1}}{}
 \end{fulllineitems}
 
 \index{getAll() (stock.stock method)}
@@ -494,10 +494,118 @@ class for decribing stock evolution
 \label{test:module-test}\label{test::doc}\label{test:test-module}\index{test (module)}
 
 \chapter{testVirtualMarket module}
-\label{testVirtualMarket:testvirtualmarket-module}\label{testVirtualMarket::doc}
+\label{testVirtualMarket:module-testVirtualMarket}\label{testVirtualMarket::doc}\label{testVirtualMarket:testvirtualmarket-module}\index{testVirtualMarket (module)}
 
 \chapter{virtualMarket module}
-\label{virtualMarket:virtualmarket-module}\label{virtualMarket::doc}
+\label{virtualMarket:module-virtualMarket}\label{virtualMarket::doc}\label{virtualMarket:virtualmarket-module}\index{virtualMarket (module)}\index{virtualMarket (class in virtualMarket)}
+
+\begin{fulllineitems}
+\phantomsection\label{virtualMarket:virtualMarket.virtualMarket}\pysiglinewithargsret{\strong{class }\code{virtualMarket.}\bfcode{virtualMarket}}{\emph{nstocks}, \emph{startingCapStock}}{}
+Container Class of stocks
+\index{AddStock() (virtualMarket.virtualMarket method)}
+
+\begin{fulllineitems}
+\phantomsection\label{virtualMarket:virtualMarket.virtualMarket.AddStock}\pysiglinewithargsret{\bfcode{AddStock}}{\emph{cap}}{}
+Apend a stock with capital
+:param cap: intial capital
+
+\end{fulllineitems}
+
+\index{AddStockC() (virtualMarket.virtualMarket method)}
+
+\begin{fulllineitems}
+\phantomsection\label{virtualMarket:virtualMarket.virtualMarket.AddStockC}\pysiglinewithargsret{\bfcode{AddStockC}}{\emph{st}}{}
+Apend a stock to the container
+:param st: stock to be added
+
+\end{fulllineitems}
+
+\index{Evolve() (virtualMarket.virtualMarket method)}
+
+\begin{fulllineitems}
+\phantomsection\label{virtualMarket:virtualMarket.virtualMarket.Evolve}\pysiglinewithargsret{\bfcode{Evolve}}{}{}
+Calls the evolve method for each stock
+
+\end{fulllineitems}
+
+\index{getStock() (virtualMarket.virtualMarket method)}
+
+\begin{fulllineitems}
+\phantomsection\label{virtualMarket:virtualMarket.virtualMarket.getStock}\pysiglinewithargsret{\bfcode{getStock}}{\emph{s}}{}
+stock at position
+:param s: stock index
+:return: stock of index s
+
+\end{fulllineitems}
+
+\index{listOllClosingValues() (virtualMarket.virtualMarket method)}
+
+\begin{fulllineitems}
+\phantomsection\label{virtualMarket:virtualMarket.virtualMarket.listOllClosingValues}\pysiglinewithargsret{\bfcode{listOllClosingValues}}{}{}
+prints the list of final values of all stocks
+:returns: a print out
+
+\end{fulllineitems}
+
+\index{m\_allStocks (virtualMarket.virtualMarket attribute)}
+
+\begin{fulllineitems}
+\phantomsection\label{virtualMarket:virtualMarket.virtualMarket.m_allStocks}\pysigline{\bfcode{m\_allStocks}\strong{ = {[}{]}}}
+\end{fulllineitems}
+
+\index{m\_nstocks (virtualMarket.virtualMarket attribute)}
+
+\begin{fulllineitems}
+\phantomsection\label{virtualMarket:virtualMarket.virtualMarket.m_nstocks}\pysigline{\bfcode{m\_nstocks}\strong{ = 0}}
+\end{fulllineitems}
+
+\index{m\_overAllCapital (virtualMarket.virtualMarket attribute)}
+
+\begin{fulllineitems}
+\phantomsection\label{virtualMarket:virtualMarket.virtualMarket.m_overAllCapital}\pysigline{\bfcode{m\_overAllCapital}\strong{ = 0}}
+\end{fulllineitems}
+
+\index{m\_overAllVariation (virtualMarket.virtualMarket attribute)}
+
+\begin{fulllineitems}
+\phantomsection\label{virtualMarket:virtualMarket.virtualMarket.m_overAllVariation}\pysigline{\bfcode{m\_overAllVariation}\strong{ = 0}}
+\end{fulllineitems}
+
+\index{m\_startingCapStock (virtualMarket.virtualMarket attribute)}
+
+\begin{fulllineitems}
+\phantomsection\label{virtualMarket:virtualMarket.virtualMarket.m_startingCapStock}\pysigline{\bfcode{m\_startingCapStock}\strong{ = 0.0}}
+\end{fulllineitems}
+
+\index{m\_time (virtualMarket.virtualMarket attribute)}
+
+\begin{fulllineitems}
+\phantomsection\label{virtualMarket:virtualMarket.virtualMarket.m_time}\pysigline{\bfcode{m\_time}\strong{ = 100}}
+\end{fulllineitems}
+
+\index{randomBet() (virtualMarket.virtualMarket method)}
+
+\begin{fulllineitems}
+\phantomsection\label{virtualMarket:virtualMarket.virtualMarket.randomBet}\pysiglinewithargsret{\bfcode{randomBet}}{\emph{low=0}, \emph{up=100}}{}
+Place a random order with in range low up on the stock
+:param low: lower limit
+:param up: upper limit
+
+\end{fulllineitems}
+
+\index{setTime() (virtualMarket.virtualMarket method)}
+
+\begin{fulllineitems}
+\phantomsection\label{virtualMarket:virtualMarket.virtualMarket.setTime}\pysiglinewithargsret{\bfcode{setTime}}{\emph{time=100}}{}
+Set time
+:param time: time to be set
+
+\end{fulllineitems}
+
+
+\end{fulllineitems}
+
+
 
 \chapter{Indices and tables}
 \label{index:indices-and-tables}\begin{itemize}
@@ -517,6 +625,7 @@ class for decribing stock evolution
 \begin{theindex}
 \def\bigletter#1{{\Large\sffamily#1}\nopagebreak\vspace{1mm}}
 \bigletter{c}
+\item {\texttt{change\_stock}}, \pageref{change_stock:module-change_stock}
 \item {\texttt{conf}}, \pageref{conf:module-conf}
 \indexspace
 \bigletter{m}
@@ -530,6 +639,10 @@ class for decribing stock evolution
 \indexspace
 \bigletter{t}
 \item {\texttt{test}}, \pageref{test:module-test}
+\item {\texttt{testVirtualMarket}}, \pageref{testVirtualMarket:module-testVirtualMarket}
+\indexspace
+\bigletter{v}
+\item {\texttt{virtualMarket}}, \pageref{virtualMarket:module-virtualMarket}
 \end{theindex}
 
 \renewcommand{\indexname}{Index}
