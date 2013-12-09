@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 import stock
 from stock import stock
 
