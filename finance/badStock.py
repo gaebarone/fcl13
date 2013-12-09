@@ -1,7 +1,10 @@
-import stock as st
+from stock import stock
 
-class goodBad(st):
+class badStock(stock):
     """Derived class implementing the behviour of a bad stock"""
+
+    def __init__(self,cap):
+        stock.__init__(self,cap)
 
     def evolveBad(self,change=0,timeLow=0,timeUp=1):
         """ Evolution method, decrease value by change"""
