@@ -1,0 +1,78 @@
+\begin{theindex}
+\def\bigletter#1{{\Large\sffamily#1}\nopagebreak\vspace{1mm}}
+
+  \bigletter A
+  \item addHistoricaldata() (stock.stock method), \hyperpage{13}
+
+  \indexspace
+  \bigletter B
+  \item bet() (stock.stock method), \hyperpage{13}
+
+  \indexspace
+  \bigletter C
+  \item candlestick() (in module newfinance), \hyperpage{9}
+  \item candlestick2() (in module newfinance), \hyperpage{9}
+  \item conf (module), \hyperpage{5}
+
+  \indexspace
+  \bigletter E
+  \item evolve() (stock.stock method), \hyperpage{13}
+
+  \indexspace
+  \bigletter F
+  \item fetch\_historical\_yahoo() (in module newfinance), \hyperpage{9}
+
+  \indexspace
+  \bigletter G
+  \item getAll() (stock.stock method), \hyperpage{13}
+  \item getCap() (stock.stock method), \hyperpage{13}
+  \item getTime() (stock.stock method), \hyperpage{13}
+  \item getTimes() (stock.stock method), \hyperpage{13}
+
+  \indexspace
+  \bigletter I
+  \item index\_bar() (in module newfinance), \hyperpage{9}
+
+  \indexspace
+  \bigletter M
+  \item m\_cap (market.market attribute), \hyperpage{7}
+  \item m\_cap (stock.stock attribute), \hyperpage{13}
+  \item m\_iters (stock.stock attribute), \hyperpage{13}
+  \item m\_time (market.market attribute), \hyperpage{7}
+  \item m\_time (stock.stock attribute), \hyperpage{13}
+  \item m\_time\_his (stock.stock attribute), \hyperpage{13}
+  \item m\_val (stock.stock attribute), \hyperpage{13}
+  \item market (class in market), \hyperpage{7}
+  \item market (module), \hyperpage{7}
+
+  \indexspace
+  \bigletter N
+  \item newfinance (module), \hyperpage{9}
+  \item next() (stock.stock method), \hyperpage{13}
+
+  \indexspace
+  \bigletter P
+  \item parse\_yahoo\_historical() (in module newfinance), \hyperpage{9}
+  \item plot\_day\_summary() (in module newfinance), \hyperpage{10}
+  \item plot\_day\_summary2() (in module newfinance), \hyperpage{10}
+
+  \indexspace
+  \bigletter Q
+  \item quotes\_historical\_yahoo() (in module newfinance), \hyperpage{10}
+
+  \indexspace
+  \bigletter S
+  \item stock (class in stock), \hyperpage{13}
+  \item stock (module), \hyperpage{13}
+
+  \indexspace
+  \bigletter T
+  \item test (module), \hyperpage{15}
+
+  \indexspace
+  \bigletter V
+  \item volume\_overlay() (in module newfinance), \hyperpage{10}
+  \item volume\_overlay2() (in module newfinance), \hyperpage{11}
+  \item volume\_overlay3() (in module newfinance), \hyperpage{11}
+
+\end{theindex}
