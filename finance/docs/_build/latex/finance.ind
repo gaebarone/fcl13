@@ -3,6 +3,8 @@
 
   \bigletter A
   \item addHistoricaldata() (stock.stock method), \hyperpage{13}
+  \item AddStock() (virtualMarket.virtualMarket method), \hyperpage{19}
+  \item AddStockC() (virtualMarket.virtualMarket method), \hyperpage{19}
 
   \indexspace
   \bigletter B
@@ -12,11 +14,13 @@
   \bigletter C
   \item candlestick() (in module newfinance), \hyperpage{9}
   \item candlestick2() (in module newfinance), \hyperpage{9}
+  \item change\_stock (module), \hyperpage{3}
   \item conf (module), \hyperpage{5}
 
   \indexspace
   \bigletter E
   \item evolve() (stock.stock method), \hyperpage{13}
+  \item Evolve() (virtualMarket.virtualMarket method), \hyperpage{19}
 
   \indexspace
   \bigletter F
@@ -26,6 +30,7 @@
   \bigletter G
   \item getAll() (stock.stock method), \hyperpage{13}
   \item getCap() (stock.stock method), \hyperpage{13}
+  \item getStock() (virtualMarket.virtualMarket method), \hyperpage{19}
   \item getTime() (stock.stock method), \hyperpage{13}
   \item getTimes() (stock.stock method), \hyperpage{13}
 
@@ -34,12 +39,22 @@
   \item index\_bar() (in module newfinance), \hyperpage{9}
 
   \indexspace
+  \bigletter L
+  \item listOllClosingValues() (virtualMarket.virtualMarket method), \hyperpage{19}
+
+  \indexspace
   \bigletter M
+  \item m\_allStocks (virtualMarket.virtualMarket attribute), \hyperpage{19}
   \item m\_cap (market.market attribute), \hyperpage{7}
   \item m\_cap (stock.stock attribute), \hyperpage{13}
   \item m\_iters (stock.stock attribute), \hyperpage{13}
+  \item m\_nstocks (virtualMarket.virtualMarket attribute), \hyperpage{19}
+  \item m\_overAllCapital (virtualMarket.virtualMarket attribute), \hyperpage{19}
+  \item m\_overAllVariation (virtualMarket.virtualMarket attribute), \hyperpage{19}
+  \item m\_startingCapStock (virtualMarket.virtualMarket attribute), \hyperpage{19}
   \item m\_time (market.market attribute), \hyperpage{7}
   \item m\_time (stock.stock attribute), \hyperpage{13}
+  \item m\_time (virtualMarket.virtualMarket attribute), \hyperpage{19}
   \item m\_time\_his (stock.stock attribute), \hyperpage{13}
   \item m\_val (stock.stock attribute), \hyperpage{13}
   \item market (class in market), \hyperpage{7}
@@ -61,16 +76,24 @@
   \item quotes\_historical\_yahoo() (in module newfinance), \hyperpage{10}
 
   \indexspace
+  \bigletter R
+  \item randomBet() (virtualMarket.virtualMarket method), \hyperpage{19}
+
+  \indexspace
   \bigletter S
+  \item setTime() (virtualMarket.virtualMarket method), \hyperpage{19}
   \item stock (class in stock), \hyperpage{13}
   \item stock (module), \hyperpage{13}
 
   \indexspace
   \bigletter T
   \item test (module), \hyperpage{15}
+  \item testVirtualMarket (module), \hyperpage{17}
 
   \indexspace
   \bigletter V
+  \item virtualMarket (class in virtualMarket), \hyperpage{19}
+  \item virtualMarket (module), \hyperpage{19}
   \item volume\_overlay() (in module newfinance), \hyperpage{10}
   \item volume\_overlay2() (in module newfinance), \hyperpage{11}
   \item volume\_overlay3() (in module newfinance), \hyperpage{11}

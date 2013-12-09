@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>virtualMarket &mdash; finance  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="finance  documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">finance  documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for virtualMarket</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">stock</span>
+<span class="kn">from</span> <span class="nn">stock</span> <span class="kn">import</span> <span class="n">stock</span> 
+
+<div class="viewcode-block" id="virtualMarket"><a class="viewcode-back" href="../virtualMarket.html#virtualMarket.virtualMarket">[docs]</a><span class="k">class</span> <span class="nc">virtualMarket</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Container Class of stocks&quot;&quot;&quot;</span>
+    <span class="n">m_nstocks</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">m_overAllCapital</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">m_overAllVariation</span> <span class="o">=</span> <span class="mi">0</span> 
+    <span class="n">m_startingCapStock</span> <span class="o">=</span> <span class="mf">0.</span> 
+    <span class="n">m_time</span> <span class="o">=</span> <span class="mi">100</span> 
+    <span class="n">m_allStocks</span><span class="o">=</span><span class="p">[]</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">nstocks</span><span class="p">,</span><span class="n">startingCapStock</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Container constructor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_nstocks</span><span class="o">=</span><span class="n">nstocks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_startingCapStock</span><span class="o">=</span><span class="n">startingCapStock</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_allStocks</span><span class="o">=</span><span class="p">[]</span>
+        <span class="c">#self.m_allStocks=np.ndarray((nstocks,),dtype=np.object)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">m_nstocks</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">m_allStocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stock</span><span class="p">(</span><span class="n">startingCapStock</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">m_overAllCapital</span><span class="o">+=</span><span class="n">startingCapStock</span>
+        <span class="k">print</span> <span class="s">&quot;Constructed Virtual Market with &quot;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">m_nstocks</span><span class="p">,</span><span class="s">&quot; stocks &quot;</span> 
+   
+    <span class="k">def</span> <span class="nf">AddStock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">st</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apend a stock to the container</span>
+<span class="sd">        :param st: stock to be added</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_nstocks</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_allStocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">st</span><span class="p">);</span>   
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_overAllCapital</span>  <span class="o">+=</span> <span class="n">st</span><span class="o">.</span><span class="n">getCap</span><span class="p">()</span>
+        <span class="k">print</span> <span class="s">&quot;Added Stock &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_allStocks</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">m_nstocks</span><span class="p">],</span><span class="s">&quot; &quot;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">m_allStocks</span><span class="o">.</span><span class="n">getCap</span><span class="p">()</span>
+
+<div class="viewcode-block" id="virtualMarket.AddStock"><a class="viewcode-back" href="../virtualMarket.html#virtualMarket.virtualMarket.AddStock">[docs]</a>    <span class="k">def</span> <span class="nf">AddStock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">cap</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apend a stock with capital</span>
+<span class="sd">        :param cap: intial capital</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_nstocks</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_allStocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stock</span><span class="p">(</span><span class="n">cap</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_overAllCapital</span>  <span class="o">+=</span> <span class="n">cap</span>
+      
+</div>
+<div class="viewcode-block" id="virtualMarket.randomBet"><a class="viewcode-back" href="../virtualMarket.html#virtualMarket.virtualMarket.randomBet">[docs]</a>    <span class="k">def</span> <span class="nf">randomBet</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">up</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Place a random order with in range low up on the stock</span>
+<span class="sd">        :param low: lower limit</span>
+<span class="sd">        :param up: upper limit&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">m_nstocks</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">m_allStocks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">bet</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">low</span><span class="p">,</span><span class="n">up</span><span class="p">))</span>
+            </div>
+<div class="viewcode-block" id="virtualMarket.setTime"><a class="viewcode-back" href="../virtualMarket.html#virtualMarket.virtualMarket.setTime">[docs]</a>    <span class="k">def</span> <span class="nf">setTime</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set time</span>
+<span class="sd">        :param time: time to be set&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_time</span><span class="o">=</span><span class="n">time</span> 
+</div>
+<div class="viewcode-block" id="virtualMarket.getStock"><a class="viewcode-back" href="../virtualMarket.html#virtualMarket.virtualMarket.getStock">[docs]</a>    <span class="k">def</span> <span class="nf">getStock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">s</span><span class="p">):</span> 
+        <span class="sd">&quot;&quot;&quot;stock at position</span>
+<span class="sd">        :param s: stock index</span>
+<span class="sd">        :return: stock of index s&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_allStocks</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+        </div>
+<div class="viewcode-block" id="virtualMarket.listOllClosingValues"><a class="viewcode-back" href="../virtualMarket.html#virtualMarket.virtualMarket.listOllClosingValues">[docs]</a>    <span class="k">def</span> <span class="nf">listOllClosingValues</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;prints the list of final values of all stocks</span>
+<span class="sd">        :returns: a print out&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">m_nstocks</span><span class="p">):</span>
+            <span class="k">print</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_allStocks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">getCap</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="virtualMarket.Evolve"><a class="viewcode-back" href="../virtualMarket.html#virtualMarket.virtualMarket.Evolve">[docs]</a>    <span class="k">def</span> <span class="nf">Evolve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calls the evolve method for each stock&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">m_time</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">m_nstocks</span><span class="p">):</span>
+                <span class="c">#print &quot;Evovling stock &quot;,i</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">m_overAllCapital</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_allStocks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">evolve</span><span class="p">()</span>
+                </div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">finance  documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, G. Barone, J. Bilbao de Mendizabal, A. Katre.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b3.
+    </div>
+  </body>
+</html>

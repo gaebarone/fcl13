@@ -36,22 +36,25 @@ class stock():
         return self.m_time_his 
 
     def addHistoricaldata(self,currentVal=0,time=0):
-        self.m_val.append(float(currentVal))
-        self.m_cap=float(currentVal)
+        self.m_val.append(currentVal)
+        self.m_cap=currentVal
         self.m_iters+=1
         self.m_time=time
+        self.m_time_his.append(time)
         return self.getCap()
 
-    def evolve(self,change=0,use=False):
-        if use:
-            self.m_cap = self.m_cap*change + self.m_cap
-        else:
-            self.m_cap += np.random.normal(0,.1,1)*self.m_cap  
-        self.m_iters+=1
-        self.m_time+=1
-        self.m_val.append(float(self.m_cap))
-        self.m_time_his.append(self.m_time)
-        #print "time ",self.m_time," value ",self.m_cap
+    def evolve(self,change=0,use=False,timeLow=0,timeUp=1):
+        for t in range(timeLow,timeUp):
+            if use:
+                self.m_cap = self.m_cap*change 
+                #self.m_cap = self.m_cap*change + self.m_cap
+            else:
+                self.m_cap += np.random.normal(0,.1,1)*self.m_cap  
+            self.m_iters+=1
+            self.m_time+=1
+            self.m_val.append(float(self.m_cap))
+            self.m_time_his.append(self.m_time)
+
         return self.m_cap
 
 

@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>virtualMarket module &mdash; finance  documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="finance  documentation" href="index.html" />
+    <link rel="prev" title="testVirtualMarket module" href="testVirtualMarket.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="testVirtualMarket.html" title="testVirtualMarket module"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">finance  documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-virtualMarket">
+<span id="virtualmarket-module"></span><h1>virtualMarket module<a class="headerlink" href="#module-virtualMarket" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="virtualMarket.virtualMarket">
+<em class="property">class </em><tt class="descclassname">virtualMarket.</tt><tt class="descname">virtualMarket</tt><big>(</big><em>nstocks</em>, <em>startingCapStock</em><big>)</big><a class="reference internal" href="_modules/virtualMarket.html#virtualMarket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#virtualMarket.virtualMarket" title="Permalink to this definition">¶</a></dt>
+<dd><p>Container Class of stocks</p>
+<dl class="method">
+<dt id="virtualMarket.virtualMarket.AddStock">
+<tt class="descname">AddStock</tt><big>(</big><em>cap</em><big>)</big><a class="reference internal" href="_modules/virtualMarket.html#virtualMarket.AddStock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#virtualMarket.virtualMarket.AddStock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apend a stock with capital
+:param cap: intial capital</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="virtualMarket.virtualMarket.AddStockC">
+<tt class="descname">AddStockC</tt><big>(</big><em>st</em><big>)</big><a class="headerlink" href="#virtualMarket.virtualMarket.AddStockC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apend a stock to the container
+:param st: stock to be added</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="virtualMarket.virtualMarket.Evolve">
+<tt class="descname">Evolve</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/virtualMarket.html#virtualMarket.Evolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#virtualMarket.virtualMarket.Evolve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls the evolve method for each stock</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="virtualMarket.virtualMarket.getStock">
+<tt class="descname">getStock</tt><big>(</big><em>s</em><big>)</big><a class="reference internal" href="_modules/virtualMarket.html#virtualMarket.getStock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#virtualMarket.virtualMarket.getStock" title="Permalink to this definition">¶</a></dt>
+<dd><p>stock at position
+:param s: stock index
+:return: stock of index s</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="virtualMarket.virtualMarket.listOllClosingValues">
+<tt class="descname">listOllClosingValues</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/virtualMarket.html#virtualMarket.listOllClosingValues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#virtualMarket.virtualMarket.listOllClosingValues" title="Permalink to this definition">¶</a></dt>
+<dd><p>prints the list of final values of all stocks
+:returns: a print out</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="virtualMarket.virtualMarket.m_allStocks">
+<tt class="descname">m_allStocks</tt><em class="property"> = []</em><a class="headerlink" href="#virtualMarket.virtualMarket.m_allStocks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="virtualMarket.virtualMarket.m_nstocks">
+<tt class="descname">m_nstocks</tt><em class="property"> = 0</em><a class="headerlink" href="#virtualMarket.virtualMarket.m_nstocks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="virtualMarket.virtualMarket.m_overAllCapital">
+<tt class="descname">m_overAllCapital</tt><em class="property"> = 0</em><a class="headerlink" href="#virtualMarket.virtualMarket.m_overAllCapital" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="virtualMarket.virtualMarket.m_overAllVariation">
+<tt class="descname">m_overAllVariation</tt><em class="property"> = 0</em><a class="headerlink" href="#virtualMarket.virtualMarket.m_overAllVariation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="virtualMarket.virtualMarket.m_startingCapStock">
+<tt class="descname">m_startingCapStock</tt><em class="property"> = 0.0</em><a class="headerlink" href="#virtualMarket.virtualMarket.m_startingCapStock" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="virtualMarket.virtualMarket.m_time">
+<tt class="descname">m_time</tt><em class="property"> = 100</em><a class="headerlink" href="#virtualMarket.virtualMarket.m_time" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="virtualMarket.virtualMarket.randomBet">
+<tt class="descname">randomBet</tt><big>(</big><em>low=0</em>, <em>up=100</em><big>)</big><a class="reference internal" href="_modules/virtualMarket.html#virtualMarket.randomBet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#virtualMarket.virtualMarket.randomBet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Place a random order with in range low up on the stock
+:param low: lower limit
+:param up: upper limit</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="virtualMarket.virtualMarket.setTime">
+<tt class="descname">setTime</tt><big>(</big><em>time=100</em><big>)</big><a class="reference internal" href="_modules/virtualMarket.html#virtualMarket.setTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#virtualMarket.virtualMarket.setTime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set time
+:param time: time to be set</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="testVirtualMarket.html"
+                        title="previous chapter">testVirtualMarket module</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/virtualMarket.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="testVirtualMarket.html" title="testVirtualMarket module"
+             >previous</a> |</li>
+        <li><a href="index.html">finance  documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, G. Barone, J. Bilbao de Mendizabal, A. Katre.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b3.
+    </div>
+  </body>
+</html>

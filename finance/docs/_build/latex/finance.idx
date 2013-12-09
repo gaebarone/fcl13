@@ -1,3 +1,4 @@
+\indexentry{change\_stock (module)|hyperpage}{3}
 \indexentry{conf (module)|hyperpage}{5}
 \indexentry{market (module)|hyperpage}{7}
 \indexentry{market (class in market)|hyperpage}{7}
@@ -31,3 +32,19 @@
 \indexentry{m\_val (stock.stock attribute)|hyperpage}{13}
 \indexentry{next() (stock.stock method)|hyperpage}{13}
 \indexentry{test (module)|hyperpage}{15}
+\indexentry{testVirtualMarket (module)|hyperpage}{17}
+\indexentry{virtualMarket (module)|hyperpage}{19}
+\indexentry{virtualMarket (class in virtualMarket)|hyperpage}{19}
+\indexentry{AddStock() (virtualMarket.virtualMarket method)|hyperpage}{19}
+\indexentry{AddStockC() (virtualMarket.virtualMarket method)|hyperpage}{19}
+\indexentry{Evolve() (virtualMarket.virtualMarket method)|hyperpage}{19}
+\indexentry{getStock() (virtualMarket.virtualMarket method)|hyperpage}{19}
+\indexentry{listOllClosingValues() (virtualMarket.virtualMarket method)|hyperpage}{19}
+\indexentry{m\_allStocks (virtualMarket.virtualMarket attribute)|hyperpage}{19}
+\indexentry{m\_nstocks (virtualMarket.virtualMarket attribute)|hyperpage}{19}
+\indexentry{m\_overAllCapital (virtualMarket.virtualMarket attribute)|hyperpage}{19}
+\indexentry{m\_overAllVariation (virtualMarket.virtualMarket attribute)|hyperpage}{19}
+\indexentry{m\_startingCapStock (virtualMarket.virtualMarket attribute)|hyperpage}{19}
+\indexentry{m\_time (virtualMarket.virtualMarket attribute)|hyperpage}{19}
+\indexentry{randomBet() (virtualMarket.virtualMarket method)|hyperpage}{19}
+\indexentry{setTime() (virtualMarket.virtualMarket method)|hyperpage}{19}

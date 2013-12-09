@@ -8,5 +8,5 @@
 \contentsline {chapter}{\numberline {7}testVirtualMarket module}{17}{chapter.7}
 \contentsline {chapter}{\numberline {8}virtualMarket module}{19}{chapter.8}
 \contentsline {chapter}{\numberline {9}Indices and tables}{21}{chapter.9}
-\contentsline {chapter}{Python Module Index}{23}{section*.31}
-\contentsline {chapter}{Index}{25}{section*.32}
+\contentsline {chapter}{Python Module Index}{23}{section*.45}
+\contentsline {chapter}{Index}{25}{section*.46}
