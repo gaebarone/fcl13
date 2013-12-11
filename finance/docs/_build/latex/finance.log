@@ -1,6 +1,6 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.9.20)  9 DEC 2013 16:29
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.9.20)  9 DEC 2013 20:04
 entering extended mode
- restricted \write18 enabled.
+ \write18 enabled.
  %&-line parsing enabled.
 **finance.tex
 (./finance.tex
@@ -1023,7 +1023,7 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 650.
 Here is how much of TeX's memory you used:
  8975 strings out of 493488
  125642 string characters out of 3141326
- 222916 words of memory out of 3000000
+ 222920 words of memory out of 3000000
  11969 multiletter control sequences out of 15000+200000
  55806 words of font info for 60 fonts, out of 3000000 for 9000
  958 hyphenation exceptions out of 8191
@@ -1037,7 +1037,7 @@ type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1/u
 rw/times/utmb8a.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1/urw/times/u
 tmbi8a.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1/urw/times/utmr8a.pfb
 ></usr/local/texlive/2012/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on finance.pdf (30 pages, 126100 bytes).
+Output written on finance.pdf (30 pages, 126423 bytes).
 PDF statistics:
  353 PDF objects out of 1000 (max. 8388607)
  303 compressed objects within 4 object streams
